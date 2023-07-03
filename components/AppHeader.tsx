@@ -1,13 +1,18 @@
 import { View, Text, StyleSheet,TouchableOpacity } from 'react-native'
 import React from 'react'
 import { CINZA_ESCURO, VERDE_CLARO } from '../styles/colors'
+import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { RootStackParamList } from '../App'; // Import the RootStackParamList type
 
 export default function AppHeader() {
+
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.header_title}>Sheipe</Text>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={()=> navigation.navigate('InfoScreen')}>
           <Text style={styles.info_icon}>ℹ️</Text>
         </ TouchableOpacity>
       </View>

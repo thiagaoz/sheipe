@@ -51,13 +51,14 @@ export default function TreinoScreen() {
 
         <View style={styles.treino_container}>
           <Text style={styles.titulo}>{treino.nome}</Text>
+          {/* 
           <TouchableOpacity onPress={ ()=>setModalVisible(!modalVisible) } >
             <Text style={styles.emoji_editar}>✏️</Text>
           </TouchableOpacity>
           <TouchableOpacity>
             <Text style={styles.emoji_estatisticas}>📊</Text>
           </TouchableOpacity>
-
+        */}
         </View>
 
         {treino.exercicios.length === 0? 
