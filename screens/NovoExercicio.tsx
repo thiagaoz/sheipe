@@ -8,7 +8,7 @@ import CustomButton from '../components/CustomButton';
 import CampoMusculo from '../components/CampoMusculo';
 import SelecionaMusculoModal from '../components/SelecionaMusculoModal';
 import { Exercicio, Treino } from '../models/models';
-import { adicionarExercicio, editarTreino} from '../store/storeConfig';
+import { adicionarExercicio, editarTreino, resetExercicio, resetTreino} from '../store/storeConfig';
 import { useDispatch } from 'react-redux'
 import * as db from '../database/database';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
@@ -72,13 +72,17 @@ export default function NovoExercicio() {
   }
 
   const handleNovoExercicio = async () => {
+        
+    {/*  USADO PARA TESTES
     let exercicio:Exercicio
     if(!nome && !musculo && !sets && !reps && !carga){
       exercicio = new Exercicio ('Supino','Peito','3','10','50')
     }else{
       exercicio = new Exercicio(nome, musculo, sets, reps, carga) 
     }
-
+    */}
+    
+    let exercicio : Exercicio = new Exercicio(nome, musculo, sets, reps, carga)
     const novoExerciciosArr: Exercicio[]  = [...treino.exercicios]
     novoExerciciosArr.push(exercicio)
     const treinoAtualizado = {...treino, exercicios: novoExerciciosArr}
@@ -88,14 +92,32 @@ export default function NovoExercicio() {
     navigation.goBack()
   }
 
-  const handleFocus = (ref: React.RefObject<TextInput>, text: string ) => { 
-    if(ref.current){
-        requestAnimationFrame(() => {
-          ref.current?.setNativeProps({
-            selection: { start: text.length, end: text.length },
-          });
-        });
-    }
+  const handleCancelar = () => { 
+    dispatch(resetExercicio())
+    navigation.goBack()
+  }
+
+  const handleDeletarExercicio = async () => { 
+    const novoExerciciosArr =  treino.exercicios.filter(exer => exer.key !== exercicio?.key)
+    const treinoAtualizado = {...treino, exercicios: novoExerciciosArr}
+    await db.salvarTreino(treinoAtualizado)
+    dispatch(editarTreino({...treinoAtualizado}))
+    dispatch(resetExercicio())
+    navigation.goBack()
+  }
+
+  const deleteExercicioAlert = () => { 
+    Alert.alert(
+      'Deletar Treino',
+      'Você quer deletar o treino "' + exercicio?.nome + ' " ?',
+      [
+        {
+          text: 'SIM',
+          onPress: () => handleDeletarExercicio()
+        },
+        {text: 'NÃO', style: 'cancel'}
+      ]
+    )
   }
 
   return(
@@ -148,19 +170,21 @@ export default function NovoExercicio() {
               ref={cargaRef}
               value={carga}
               onChangeText={ text => setCarga(text)}
-              onFocus={()=>handleFocus(cargaRef, carga)}
             />
           </View>
         </View>
         <View style={styles.modal_buttons_container}>
-          {exercicio?
-          <CustomButton style={styles.button_ok} title='Editar' onPress={()=>handleEditarExercicio()}/>
-          :
-          <CustomButton style={styles.button_ok} title='Adicionar' onPress={()=>handleNovoExercicio()}/>
+          {!nome || !musculo || !sets || !reps || !carga ?
+          <CustomButton style={styles.button_off} title='Salvar' />
+            :
+          <CustomButton style={styles.button_ok} title='Salvar' onPress={ exercicio? handleEditarExercicio : handleNovoExercicio}/>
           }
           
-          <CustomButton style={styles.button_cancel} title='Cancelar' onPress={() => navigation.goBack()}/>
+          <CustomButton style={styles.button_cancel} title='Cancelar' onPress={handleCancelar}/>
         </View>
+        {exercicio&&
+          <CustomButton style={styles.button_delete} title='DELETAR' onPress={deleteExercicioAlert}/>
+          }
       </View>
 
     </View>
@@ -174,8 +198,8 @@ const styles = StyleSheet.create({
   },
   form_container:{
     flex: 1,
-    borderColor: 'white',
-    borderWidth: 1
+    
+    paddingTop: 20
   },
   mais_treino:{
     backgroundColor: VERDE_CLARO,
@@ -233,10 +257,22 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 20
   },
+  button_off:{
+    backgroundColor: CINZA_CLARO,
+    width: 100,
+  },
   button_ok:{
-    backgroundColor: VERDE_OK
+    backgroundColor: VERDE_OK,
+    width: 100
   },
   button_cancel:{
+    backgroundColor: VERMELHO_CANCEL,
+    width: 100
+  },
+  button_delete:{
+    alignSelf: 'center',
+    marginTop: 40,
+    width: 200,
     backgroundColor: VERMELHO_CANCEL
   }
 

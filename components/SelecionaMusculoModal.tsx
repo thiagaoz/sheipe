@@ -53,13 +53,17 @@ const styles = StyleSheet.create({
 
     },
     content: {
-      marginTop: 180,
+      marginTop: 200,
+      paddingTop: 20,
+      paddingBottom: 20,
       backgroundColor: CINZA_CLARO,
       alignSelf: 'center',
       justifyContent: 'center',
       alignItems: 'center',
       borderRadius: 20,
-      width: '90%'
+      width: '90%',
+      borderColor: 'white',
+      borderWidth: 0.5
         
     },
     item: {

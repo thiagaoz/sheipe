@@ -52,17 +52,7 @@ export default function Home() {
       console.log('Failed to clear data:', e);
     }
   };
-
-  const showAlert = () => { 
-    Alert.alert(
-      'Alert Title',
-      'Alert message',
-      [
-        {text: 'OK'},
-        {text: 'Cancel', style: 'cancel'}
-      ]
-    )
-  }
+  
 
   return (
     <View style={styles.container}>
@@ -71,11 +61,12 @@ export default function Home() {
         <TouchableOpacity onPress={()=> {setModalVisible(!modalVisible)}}>
           <Text style={styles.mais_treino}>+ Treino</Text>
         </TouchableOpacity>
+
+        {/* --- BOTÕES DE TESTES
         <CustomButton style={styles.button_teste} title='REDUX STORE' onPress={()=>currentStore()}/>
         <CustomButton style={styles.button_teste} title='DATABASE' onPress={()=>currentDatabase()}/>
         <CustomButton style={styles.button_teste} title='CLEAR DB' onPress={()=>clearData()}/>
-        <CustomButton style={styles.button_teste} title='ALERT' onPress={showAlert}/>
-
+        */}
         {modalVisible &&
           <NovoTreinoModal modalVisible={modalVisible} setModalVisible={setModalVisible} />
         }

@@ -57,9 +57,8 @@ const styles = StyleSheet.create({
       flexDirection: 'row', 
       alignItems: 'stretch',
       justifyContent: 'flex-start',
-      borderWidth:1,
-      borderColor: BRANCO,
-      margin: 1
+      borderWidth: 0.5,
+      borderColor: BRANCO
     },
     nome:{
         color: 'white',
@@ -80,7 +79,7 @@ const styles = StyleSheet.create({
         marginRight:5
     },
     status_touchable:{    
-      borderWidth:1,
+      borderWidth: 0.5,
       borderColor: BRANCO
     },
     emoji:{   

@@ -7,7 +7,6 @@ import { TreinosState, store } from '../store/storeConfig';
 import { useAppSelector } from '../store/hooks';
 
 
-
 export default function Treinos() {
   
   const treinos:Treino[] = useAppSelector( (state) => state.treino.treinosArr);
@@ -17,7 +16,7 @@ export default function Treinos() {
       <Text style={styles.titulo}>Treinos</Text>
       {treinos.length!==0&&
         treinos.map( treino => (
-          <TreinoRow treino={treino} key={treino.key}/>
+          <TreinoRow treino={treino} key={treino.key} />
         ))
       }
     </View>

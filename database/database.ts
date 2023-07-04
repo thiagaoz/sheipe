@@ -55,6 +55,16 @@ export const getTreino = async(key:string): Promise<Treino|null>  => {
     }
 }
 
+export const deleteTreinoDB = async (key:string) => {
+    try {
+      await AsyncStorage.removeItem(key)
+    } catch(e) {
+      console.log('Erro ao remover treino')
+    }
+  
+    console.log('Done.')
+  }
+
 export const clearAll = async () => {
     try {
       await AsyncStorage.clear()

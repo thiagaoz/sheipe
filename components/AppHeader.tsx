@@ -29,8 +29,8 @@ const styles = StyleSheet.create({
         alignSelf: 'flex-start',
         justifyContent:'space-between',
         flexDirection: 'row',
-        borderColor: 'white',
-        borderWidth:1,
+        borderColor: VERDE_CLARO,
+        borderWidth: 0.5,
         width: '100%'
     },
     header_title: {

@@ -9,6 +9,7 @@ import * as db from '../database/database';
 import { TreinosState, store } from '../store/storeConfig';
 import { useAppSelector } from '../store/hooks';
 import NovoTreinoModal from './NovoTreinoModal';
+import AppHeader from '../components/AppHeader';
 
 export default function TreinoScreen() {
 
@@ -29,6 +30,7 @@ export default function TreinoScreen() {
     );
   };
 
+{/*
   const consoleLogTreino = async() => {
     console.log('------ EXERCICIOS - STORE ------------')
     exercicios.forEach( exercicio => {
@@ -42,12 +44,11 @@ export default function TreinoScreen() {
       })
     }
   }
+*/}
 
   return (
     <View style={styles.container}>
-        <View style={styles.header}>
-          <Text style={styles.header_title}>Sheipe</Text>
-        </View>
+        <AppHeader />
 
         <View style={styles.treino_container}>
           <Text style={styles.titulo}>{treino.nome}</Text>
@@ -70,9 +71,11 @@ export default function TreinoScreen() {
           <Text >+ Exercício</Text>
         </TouchableOpacity>
 
+        {/* --- BOTÕES DE TESTES
         <TouchableOpacity style={styles.mais_exercicio} onPress={() => consoleLogTreino()}>
           <Text >CONSOLE LOG</Text>
         </TouchableOpacity>
+        */}
 
         {modalVisible &&
           <NovoTreinoModal modalVisible={modalVisible} setModalVisible={setModalVisible} modoEditar={true}/>
@@ -95,7 +98,8 @@ const styles = StyleSheet.create({
     },
     header_title: {
       color: VERDE_CLARO,
-      fontSize: 25,
+      alignSelf: 'center',
+      fontSize: 20,
       marginLeft: 10
     },
     treino_container:{

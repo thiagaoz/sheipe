@@ -55,20 +55,11 @@ export default function NovoTreino({modalVisible, setModalVisible, modoEditar}: 
   }
 
   const handleNovoTreino = async () => {
-    if(!inputText) {
-      const treino = new Treino('Push')
-      await db.salvarNovoTreino(treino)
-      dispatch(adicionarTreino({...treino}))
-      setModalVisible(!modalVisible) 
-      Keyboard.dismiss(); 
-    }else{
-      const treino = new Treino(inputText)
-      await db.salvarNovoTreino(treino)
-      dispatch(adicionarTreino({...treino}))
-      setModalVisible(!modalVisible) 
-      Keyboard.dismiss(); 
-    }
-      
+    const treino = new Treino(inputText)
+    await db.salvarNovoTreino(treino)
+    dispatch(adicionarTreino({...treino}))
+    setModalVisible(!modalVisible) 
+    Keyboard.dismiss(); 
   }
 
   const handleOnShow = () => {
@@ -99,10 +90,11 @@ export default function NovoTreino({modalVisible, setModalVisible, modoEditar}: 
             autoFocus={true}
           />
           <View style={styles.modal_buttons_container}>
-            {modoEditar?
-            <CustomButton style={styles.button_ok} title='Salvar' onPress={() => { handleEditarTreino() }}/>
-            :
-            <CustomButton style={styles.button_ok} title='Adicionar' onPress={() => { handleNovoTreino() }}/>
+            {
+            !inputText?
+              <CustomButton style={styles.button_off} title='Salvar' />
+              :
+              <CustomButton style={styles.button_ok} title='Salvar' onPress={ modoEditar? handleEditarTreino : handleNovoTreino}/>
             }
             <CustomButton style={styles.button_cancel} title='Cancelar' onPress={() => {setModalVisible(!modalVisible)}} />
           </View>
@@ -129,19 +121,26 @@ const styles = StyleSheet.create({
   modal_buttons_container:{
     flexDirection: 'row',
     justifyContent: 'space-evenly',
-    width: '100%'
+    width: '100%',
+    marginTop: 50
   },
   input_field:{
     margin: 5,
     paddingLeft:30,
     paddingRight: 30,
     backgroundColor: '#d9d6d6',
+    width: 200
   },
-
+  button_off:{
+    backgroundColor: CINZA_ESCURO,
+    width: 100
+  },
   button_ok:{
-    backgroundColor: VERDE_OK
+    backgroundColor: VERDE_OK,
+    width: 100
   },
   button_cancel:{
-    backgroundColor: VERMELHO_CANCEL
-  }
+    backgroundColor: VERMELHO_CANCEL,
+    width: 100
+  },
 });

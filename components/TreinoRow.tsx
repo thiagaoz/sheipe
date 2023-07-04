@@ -5,12 +5,15 @@ import React, { useState } from 'react'
 import Exercicios from './Exercicios'
 import { Treino } from '../models/models'
 import { BRANCO } from '../styles/colors'
-import { store, setTreinoAtual } from '../store/storeConfig';
+import { store, setTreinoAtual, deletaTreino } from '../store/storeConfig';
 import NovoTreinoModal from '../screens/NovoTreinoModal';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
+import * as db from '../database/database'
+
 
 
 interface Props{
-    treino: Treino
+    treino: Treino,
 }
 
 export default function TreinoRow({treino}:Props) {
@@ -18,37 +21,53 @@ export default function TreinoRow({treino}:Props) {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
   const [editTreinoModal, setEditTreinoModal] = useState<boolean>(false)
+  const dispatch = useAppDispatch()
+
+  //const treinoState = useAppSelector((state) => state.treino.atual)
 
   const handleCliqueTreino = () => { 
-    store.dispatch(setTreinoAtual(treino))
+    dispatch(setTreinoAtual(treino))
     navigation.navigate('TreinoDisplayScreen')
   }
 
-  const deleteTreinoAlert = () => { 
-    console.log('Alertado!')
+  const handleEditTreino = () => {
+    dispatch(setTreinoAtual({...treino})) 
+    setEditTreinoModal(true)
+
+  }
+  const handleDeleteTreino = () => {
+    db.deleteTreinoDB(treino.key)
+    dispatch(deletaTreino(treino.index))
+  }
+
+  const deleteTreinoAlert = (txt:string) => { 
     Alert.alert(
-      'Alert Title',
-      'Alert message',
+      'Deletar Treino',
+      'Você quer deletar o treino "' + txt+ ' " ?',
       [
-        {text: 'OK'},
-        {text: 'Cancel', style: 'cancel'}
+        {
+          text: 'SIM',
+          onPress: () => handleDeleteTreino()
+        },
+        {text: 'NÃO', style: 'cancel'}
       ]
     )
   }
 
   return (
     <View  style={styles.container}>
-        <TouchableOpacity
+        <TouchableOpacity style={styles.nome_container}
           onPress={()=> handleCliqueTreino()}
         >
             <Text style={styles.nome}>{treino.nome}</Text>
         </TouchableOpacity>
+        
         <View style={styles.emoji_container}>
-          <TouchableOpacity onPress={()=>setEditTreinoModal(true)}>
+          <TouchableOpacity onPress={()=>handleEditTreino()}>
             <Text style={styles.emoji}>✏️</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={()=>deleteTreinoAlert}>
+          <TouchableOpacity onPress={()=>deleteTreinoAlert(treino.nome)}>
             <Text style={styles.emoji}>❌</Text>
           </TouchableOpacity>
         </View>
@@ -67,16 +86,20 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         borderWidth:0.5,
         borderColor: BRANCO,
-        margin: 1
     },
     emoji_container:{
       flexDirection: 'row',
       alignSelf: 'center',
       
     },
+    nome_container:{
+      flex:1,
+      borderWidth:0.5,
+      borderColor: BRANCO,
+    },
     nome:{
       color: 'white',
-      alignSelf: 'center',
+      alignSelf: 'flex-start',
       fontSize: 25,
       paddingLeft: 20
     },

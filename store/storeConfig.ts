@@ -32,12 +32,17 @@ const treinoSlice = createSlice({
         setTreinoAtual: (state, action:PayloadAction<Treino>) => {
           Object.assign(state.atual, action.payload)
         },
+        deletaTreino: (state, action:PayloadAction<number>) => {
+          const index = action.payload
+          state.treinosArr.splice(index, 1)
+          console.log(state.treinosArr.length)
+        },
         resetTreino: () => initialTreinoState,
         
     }
 })
 
-export const {adicionarTreino, adicionarExercicio, resetTreino, setTreinoAtual, editarTreino} = treinoSlice.actions
+export const {adicionarTreino, adicionarExercicio, resetTreino, setTreinoAtual, editarTreino, deletaTreino} = treinoSlice.actions
 
 export interface ExercicioState {
   atual: Exercicio | null
