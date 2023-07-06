@@ -5,7 +5,7 @@ import { CINZA_ESCURO } from '../styles/colors'
 const InfoScreen = () => {
 
   const handleLinkPress = () => {
-    const url = 'https://example.com'; // Replace with your desired URL
+    const url = 'https://github.com/thiagaoz/sheipe'; // Replace with your desired URL
     Linking.openURL(url);
   };
 

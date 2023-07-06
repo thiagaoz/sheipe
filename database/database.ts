@@ -23,6 +23,16 @@ export const salvarTreino  = async  (treino:Treino) => {
     }
 }
 
+export const multiSalvaTreino = async (treinos: Treino[]) => {
+    try{
+        const treinoItems = treinos.map((treino) => [treino.key, JSON.stringify(treino)])
+        await AsyncStorage.multiSet(treinoItems as [string, string][])
+    } catch(e){
+        console.log(e)
+        console.log('Erro no multiSave')
+    }
+}
+
 export const getAllTreinos = async (): Promise<Treino[]>=> { 
     try{
         const allKeys = await AsyncStorage.getAllKeys();
@@ -35,8 +45,8 @@ export const getAllTreinos = async (): Promise<Treino[]>=> {
             }
             }
         );
-        treinos.filter((treino) => treino !== null);    
-        return setIndexInTreinos(treinos);
+        treinos.filter((treino) => treino !== null);
+        return treinos.sort( (a,b) => a.index - b.index);
         
     } catch(e){
         console.log('ERRO ao localizar TREINOS')

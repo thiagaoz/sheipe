@@ -19,12 +19,19 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/sheipe_foreground.png",
+        "foregroundImage": "./assets/sheipe_icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.thiagao.sheipe",
+      "publishBundlePath": "sheipe.apk" 
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "54820a52-fcf0-435d-ae68-11fd55c89063"
+      }
     }
   }
 }

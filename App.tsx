@@ -1,13 +1,11 @@
 import { StatusBar } from 'expo-status-bar';
-import {NavigationContainer} from '@react-navigation/native';
-import { createNativeStackNavigator, NativeStackNavigationProp } from '@react-navigation/native-stack';
-import React, { useEffect } from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React from 'react';
 import Home from './screens/Home';
 import TreinoDisplayScreen from './screens/TreinoDisplayScreen';
 import InfoScreen from './screens/InfoScreen';
-import { Exercicio, Treino } from './models/models';
 import NovoExercicio from './screens/NovoExercicio';
-import { clearAll } from './database/database';
 import { store } from './store/storeConfig';
 import { Provider } from 'react-redux'
 

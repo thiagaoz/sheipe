@@ -18,12 +18,11 @@ const treinoSlice = createSlice({
     initialState: initialTreinoState,
     reducers: {
         adicionarTreino: (state, action:PayloadAction<Treino>) => {
-            action.payload.index = state.treinosArr.length  // set o novo treino com index na última posição
             state.treinosArr.push(action.payload)
         },
         editarTreino: (state, action:PayloadAction<Treino>) => {
           Object.assign(state.atual, action.payload)
-          Object.assign(state.treinosArr[state.atual.index], state.atual);
+          Object.assign(state.treinosArr[action.payload.index], action.payload);
         },
         adicionarExercicio: (state, action:PayloadAction<Exercicio>) => {
           state.atual.exercicios.push(action.payload)
@@ -32,17 +31,15 @@ const treinoSlice = createSlice({
         setTreinoAtual: (state, action:PayloadAction<Treino>) => {
           Object.assign(state.atual, action.payload)
         },
-        deletaTreino: (state, action:PayloadAction<number>) => {
-          const index = action.payload
-          state.treinosArr.splice(index, 1)
-          console.log(state.treinosArr.length)
+        carregaTreinos: (state, action:PayloadAction<Treino[]>) => {
+          state.treinosArr = [...action.payload]
         },
         resetTreino: () => initialTreinoState,
         
     }
 })
 
-export const {adicionarTreino, adicionarExercicio, resetTreino, setTreinoAtual, editarTreino, deletaTreino} = treinoSlice.actions
+export const {adicionarTreino, adicionarExercicio, resetTreino, setTreinoAtual, editarTreino, carregaTreinos} = treinoSlice.actions
 
 export interface ExercicioState {
   atual: Exercicio | null

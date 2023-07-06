@@ -5,7 +5,7 @@ import React, { useState } from 'react'
 import Exercicios from './Exercicios'
 import { Treino } from '../models/models'
 import { BRANCO } from '../styles/colors'
-import { store, setTreinoAtual, deletaTreino } from '../store/storeConfig';
+import { store, setTreinoAtual, carregaTreinos } from '../store/storeConfig';
 import NovoTreinoModal from '../screens/NovoTreinoModal';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import * as db from '../database/database'
@@ -24,6 +24,7 @@ export default function TreinoRow({treino}:Props) {
   const dispatch = useAppDispatch()
 
   //const treinoState = useAppSelector((state) => state.treino.atual)
+  const treinos = useAppSelector((state)=> state.treino.treinosArr)
 
   const handleCliqueTreino = () => { 
     dispatch(setTreinoAtual(treino))
@@ -35,9 +36,19 @@ export default function TreinoRow({treino}:Props) {
     setEditTreinoModal(true)
 
   }
-  const handleDeleteTreino = () => {
-    db.deleteTreinoDB(treino.key)
-    dispatch(deletaTreino(treino.index))
+  const handleDeleteTreino = async () => {
+    const treinosAtualizados:Treino[] = []
+    for(let i=0 ; i < treinos.length ; i++){
+      if(i !== treino.index){
+        treinosAtualizados.push(treinos[i])
+      }
+    }
+    await db.deleteTreinoDB(treino.key)
+    if(treinosAtualizados.length > 0){
+      treinosAtualizados.sort((a,b) => a.index - b.index)
+      await db.multiSalvaTreino(treinosAtualizados)
+    }
+    dispatch(carregaTreinos([...treinosAtualizados]))
   }
 
   const deleteTreinoAlert = (txt:string) => { 

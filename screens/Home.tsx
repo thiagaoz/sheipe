@@ -1,5 +1,5 @@
 import { StyleSheet, Text, TouchableOpacity, View, Modal, Alert, Button } from 'react-native';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import TreinosTable from '../components/TreinosTable';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { RootStackParamList } from '../App'; // Import the RootStackParamList type
@@ -8,7 +8,7 @@ import CustomButton from '../components/CustomButton';
 import NovoTreinoModal from './NovoTreinoModal';
 import AppHeader from '../components/AppHeader';
 import { Treino } from '../models/models';
-import { store, resetTreino, resetExercicio } from '../store/storeConfig';
+import { store, resetTreino, resetExercicio, adicionarTreino, carregaTreinos } from '../store/storeConfig';
 import * as db from '../database/database'
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 
@@ -20,9 +20,21 @@ export default function Home() {
 
 
   const [modalVisible, setModalVisible] = useState<boolean>(false)
-  const treinos = useAppSelector((state) => state.treino.atual)
+  const treinos = useAppSelector((state) => state.treino.treinosArr)
   const exercicio = useAppSelector((state)=> state.exercicio.atual)
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await db.getAllTreinos()
+      if (data) {
+        console.log('Treinos recuperados da DB: ' + data.length)
+        dispatch(carregaTreinos(data))
+      }
+    }
+    fetchData()
+  }, []);
+
+  {/*------ APENAS PARA TESTES
   const currentStore = () => { 
     const storeValue = store.getState().treino.treinosArr
     console.log('---------------- REDUX STORE -----------------------')
@@ -52,6 +64,7 @@ export default function Home() {
       console.log('Failed to clear data:', e);
     }
   };
+  */}
   
 
   return (
@@ -62,7 +75,7 @@ export default function Home() {
           <Text style={styles.mais_treino}>+ Treino</Text>
         </TouchableOpacity>
 
-        {/* --- BOTÕES DE TESTES
+        {/*------ APENAS PARA TESTES
         <CustomButton style={styles.button_teste} title='REDUX STORE' onPress={()=>currentStore()}/>
         <CustomButton style={styles.button_teste} title='DATABASE' onPress={()=>currentDatabase()}/>
         <CustomButton style={styles.button_teste} title='CLEAR DB' onPress={()=>clearData()}/>

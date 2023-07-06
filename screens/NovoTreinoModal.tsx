@@ -20,6 +20,7 @@ NovoTreino.defaultProps = {
 
 export default function NovoTreino({modalVisible, setModalVisible, modoEditar}: Props) {
   
+  const treinos = useAppSelector((state)=> state.treino.treinosArr)
   const treino = useAppSelector((state) => state.treino.atual)
   const dispatch = useAppDispatch()
   
@@ -35,27 +36,16 @@ export default function NovoTreino({modalVisible, setModalVisible, modoEditar}: 
   }, [])
   
   const handleEditarTreino = async () => { 
-    if(!inputText) { //Se vazio, não altera o nome --- MUDAR PARA ALERT
-      Alert.alert(
-        'Cuidado!',
-        'Nome do treino está vazio',
-        [
-          {text: 'OK', style: 'cancel'}
-        ]
-      )
-      //setModalVisible(!modalVisible) 
-      Keyboard.dismiss(); 
-    }else{
-      const treinoAtualizado = {...treino, nome:inputText}
-      await db.salvarTreino(treinoAtualizado) 
-      dispatch(editarTreino({...treinoAtualizado}))
-      setModalVisible(!modalVisible) 
-      Keyboard.dismiss(); 
-    }
+    const treinoAtualizado:Treino = {...treino, nome:inputText}
+    await db.salvarTreino(treinoAtualizado) 
+    dispatch(editarTreino({...treinoAtualizado}))
+    setModalVisible(!modalVisible) 
+    Keyboard.dismiss(); 
   }
 
   const handleNovoTreino = async () => {
     const treino = new Treino(inputText)
+    treino.index = treinos.length;
     await db.salvarNovoTreino(treino)
     dispatch(adicionarTreino({...treino}))
     setModalVisible(!modalVisible) 
