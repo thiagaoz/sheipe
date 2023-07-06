@@ -1,8 +1,14 @@
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, Linking, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { CINZA_ESCURO } from '../styles/colors'
 
 const InfoScreen = () => {
+
+  const handleLinkPress = () => {
+    const url = 'https://example.com'; // Replace with your desired URL
+    Linking.openURL(url);
+  };
+
   return (
     <View style={styles.container}>
       <Text>Sheipe</Text>
@@ -10,6 +16,11 @@ const InfoScreen = () => {
         <Text style={styles.text}>por Thiago Vaz</Text>
         <Text style={styles.text}>github: @thiagaoz</Text>
         <Text style={styles.text}>contato: thiagaoz@proton.me</Text>
+        <Text style={styles.text_projeto}>Repositório do projeto:</Text>
+        <TouchableOpacity onPress={handleLinkPress}>
+          <Text style={styles.text}> 🔗 github.com/thiagaoz/sheipe 🔗</Text>
+        </TouchableOpacity>
+        
       </View>
     </View>
   )
@@ -30,6 +41,11 @@ const styles = StyleSheet.create({
   text:{
     margin: 5,
     color: 'white'
+  },
+  text_projeto:{
+    margin: 5,
+    color: 'white',
+    marginTop: 50
   }
 
 
