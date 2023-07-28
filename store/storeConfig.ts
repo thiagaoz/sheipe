@@ -68,7 +68,9 @@ const treinoSlice = createSlice({
           state.atual.exercicios = setIndexInExercicios(exerciciosArrNew)
           state.treinosArr[state.atual.index] = {...state.atual}
         },
-        resetTreino: () => initialTreinoState,
+        resetTreino: (state) => {
+          state.atual = {...treinoInicial}
+        },
         
     }
 })

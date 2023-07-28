@@ -11,7 +11,6 @@ import { useAppDispatch, useAppSelector } from '../store/hooks';
 import NovoTreinoModal from './NovoTreinoModal';
 import AppHeader from '../components/AppHeader';
 import ClickableIcon from '../components/ClicklabIecon';
-import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function TreinoScreen() {
 
@@ -113,13 +112,16 @@ const styles = StyleSheet.create({
     },
     treino_container:{
       justifyContent: 'space-between',
+      alignItems: 'center',
       flexDirection: 'row',
-      marginRight: 10
+      marginLeft: 15,
+      marginRight: 15
     },
     titulo:{
       color: 'white',
       fontSize: 25,
       margin: 10,
+      fontWeight: 'bold'
     },
     emoji_estatisticas:{
       fontSize: 30,

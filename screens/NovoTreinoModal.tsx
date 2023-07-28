@@ -3,9 +3,9 @@ import CustomButton from '../components/CustomButton';
 import {VERDE_CLARO, CINZA_ESCURO, CINZA_CLARO, CINZA_MODAL, VERMELHO_CANCEL, VERDE_OK} from '../styles/colors';
 import React, { useEffect, useRef, useState } from 'react'
 import * as db from '../database/database'
-import { Exercicio, Treino, setIndexInTreinos } from '../models/models';
+import { Exercicio, Treino, setIndexInExercicios, setIndexInTreinos } from '../models/models';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { adicionarTreino, carregaTreinos, editarTreino } from '../store/storeConfig';
+import { adicionarTreino, carregaTreinos, editarTreino, resetTreino } from '../store/storeConfig';
 import Exercicios from '../components/Exercicios';
 import ClickableIcon from '../components/ClicklabIecon';
 import { useNavigation, NavigationProp } from '@react-navigation/native';
@@ -32,16 +32,28 @@ export default function NovoTreino({modalVisible, setModalVisible, modoEditar}: 
   const dispatch = useAppDispatch()
   
   const [inputText, setInputText] = useState<string>('')
+  const [treinoAltered, setTreinoAltered] = useState<boolean>(false)
+  const [treinoOld, setTreinoOld] = useState<Treino>()
   const inputRef = useRef<TextInput | null>(null);
+
+  
 
   useEffect(() => {
   
     if(modoEditar){
       setInputText(treino.nome)
+      setTreinoOld({...treino})
+    }else{
+      dispatch(resetTreino())
     }
   
   }, [])
   
+  const handleNomeChange = (text:string) => { 
+    setInputText(text)
+    setTreinoAltered(true)
+  }
+
   const handleEditarTreino = async () => { 
     const treinoAtualizado:Treino = {...treino, nome:inputText}
     await db.salvarTreino(treinoAtualizado) 
@@ -72,7 +84,9 @@ export default function NovoTreino({modalVisible, setModalVisible, modoEditar}: 
     exerciciosNew[index -1].index = index - 1
     exerciciosNew[index] = exercicios[index - 1]
     exerciciosNew[index].index = index
+    setTreinoAltered(true)
     dispatch(editarTreino({...treino, exercicios: [...exerciciosNew]}))
+    
   }
 
   const exercicioDown = (index: number) => { 
@@ -81,7 +95,17 @@ export default function NovoTreino({modalVisible, setModalVisible, modoEditar}: 
     exerciciosNew[index +1].index = index + 1
     exerciciosNew[index] = exercicios[index + 1]
     exerciciosNew[index].index = index
+    setTreinoAltered(true)
     dispatch(editarTreino({...treino, exercicios: [...exerciciosNew]}))
+    
+  }
+
+  const handleCancelar = () => { 
+    if(treinoAltered&&treinoOld){
+      const exerciciosIndexed:Exercicio[] = setIndexInExercicios(treinoOld.exercicios)
+      dispatch(editarTreino({...treinoOld, exercicios: [...exerciciosIndexed]}))
+    }
+    setModalVisible(!modalVisible)
   }
 
   const handleDeleteTreino = async () => {
@@ -132,7 +156,7 @@ export default function NovoTreino({modalVisible, setModalVisible, modoEditar}: 
             style={styles.input_field} 
             placeholder='Nome do treino'
             value={inputText}
-            onChangeText={(text) => setInputText(text)}
+            onChangeText={(text) => handleNomeChange(text)}
             autoFocus={true}
           />
 
@@ -140,16 +164,16 @@ export default function NovoTreino({modalVisible, setModalVisible, modoEditar}: 
           exercicios.map((exercicio) => {
             return (<View style={styles.exercicios_row} key={exercicio.key}>
               {exercicio.index!==0?
-                <ClickableIcon name='arrow-up' size={25} color={VERDE_CLARO} style={styles.arrows} onPress={()=>exercicioUp(exercicio.index)}/>
+                <ClickableIcon name='arrow-up' size={30} color={VERDE_CLARO} style={styles.arrows} onPress={()=>exercicioUp(exercicio.index)}/>
               :
-                <ClickableIcon name='arrow-up' size={25} color={CINZA_ESCURO} style={styles.arrows} />
+                <ClickableIcon name='arrow-up' size={30} color={CINZA_ESCURO} style={styles.arrows} />
               
               }
               <Text style={styles.exercicio_nome}>{exercicio.nome}</Text>
               {exercicio.index!==exercicios.length-1?
-                <ClickableIcon name='arrow-down' size={25} color={VERDE_CLARO}  style={styles.arrows} onPress={()=>exercicioDown(exercicio.index)}/>
+                <ClickableIcon name='arrow-down' size={30} color={VERDE_CLARO}  style={styles.arrows} onPress={()=>exercicioDown(exercicio.index)}/>
                 :
-                <ClickableIcon name='arrow-down' size={25} color={CINZA_ESCURO}  style={styles.arrows}/>  
+                <ClickableIcon name='arrow-down' size={30} color={CINZA_ESCURO}  style={styles.arrows}/>  
               }
               
             </View>)
@@ -157,14 +181,16 @@ export default function NovoTreino({modalVisible, setModalVisible, modoEditar}: 
         }
           <View style={styles.modal_buttons_container}>
             {
-            !inputText?
+            !inputText||!treinoAltered?
               <CustomButton style={styles.button_off} title='Salvar' />
               :
               <CustomButton style={styles.button_ok} title='Salvar' onPress={ modoEditar? handleEditarTreino : handleNovoTreino}/>
             }
-            <CustomButton style={styles.button_cancel} title='Cancelar' onPress={() => {setModalVisible(!modalVisible)}} />
+            <CustomButton style={styles.button_cancel} title='Cancelar' onPress={() => handleCancelar()} />
           </View>
-          <ClickableIcon name='trash' color={VERMELHO_CANCEL} size={40} style={styles.trash_icon} onPress={()=>deleteTreinoAlert(treino.nome)}/>
+          {modoEditar&&
+            <ClickableIcon name='trash' color={VERMELHO_CANCEL} size={40} style={styles.trash_icon} onPress={()=>deleteTreinoAlert(treino.nome)}/>
+          }
         </View>
       </Modal>
   )
@@ -178,6 +204,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     justifyContent: 'center',
     alignItems: 'center',
+    paddingTop: 20,
     marginTop: 100,
     minHeight: 300,
     width: 370,
@@ -214,27 +241,25 @@ const styles = StyleSheet.create({
   },
   exercicios_row:{
     flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
     marginTop: 10,
   },
   exercicio_nome: {
     color: CINZA_ESCURO,
     backgroundColor: VERDE_CLARO,
-    alignSelf: 'center',
-    fontSize: 18,
+    fontSize: 20,
+    fontWeight: '400',
     marginLeft:15,
     marginRight: 15, 
     borderRadius: 5,
     textAlign: 'center',
-    minHeight: 30,
+    alignItems: 'center',
+    minHeight: 35,
     width: 250
   },
   arrows:{
     justifyContent: 'center'
   },
   trash_icon:{
-
     marginTop: 20,
     marginBottom: 10
   }

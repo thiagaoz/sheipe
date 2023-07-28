@@ -7,19 +7,20 @@ import { GRUPOS_MUSCULARES } from '../models/models';
 interface Props{
   modalVisible: boolean,
   setModalVisible: React.Dispatch<React.SetStateAction<boolean>>,
-  musculo: string,
-  setMusculo: React.Dispatch<React.SetStateAction<string>>
+  setMusculo: React.Dispatch<React.SetStateAction<string>>,
+  setHasAlteration: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export default function NovoTreino({modalVisible, setModalVisible, musculo, setMusculo}: Props) {
+export default function NovoTreino({modalVisible, setModalVisible,setMusculo, setHasAlteration}: Props) {
 
     interface ItemProps {
         item: string;
       }
 
-    const handleSeleciona = (text:string) => { 
-        setMusculo(text)
-        setModalVisible(!modalVisible)
+    const handleSeleciona = (text:string) => {
+      setMusculo(text)
+      setHasAlteration(true)
+      setModalVisible(!modalVisible)
     }
 
     const renderMusculos = ({ item }:ItemProps) => (

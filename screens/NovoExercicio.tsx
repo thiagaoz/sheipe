@@ -8,7 +8,7 @@ import CustomButton from '../components/CustomButton';
 import CampoMusculo from '../components/CampoMusculo';
 import SelecionaMusculoModal from '../components/SelecionaMusculoModal';
 import { Exercicio, Treino, setIndexInExercicios } from '../models/models';
-import { adicionarExercicio, editarTreino, exercicioIndexMinus, exercicioIndexPlus, resetExercicio, resetTreino} from '../store/storeConfig';
+import { adicionarExercicio, editarTreino, exercicioIndexMinus, exercicioIndexPlus, resetExercicio} from '../store/storeConfig';
 import { useDispatch } from 'react-redux'
 import * as db from '../database/database';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
@@ -28,6 +28,7 @@ export default function NovoExercicio() {
   const [sets, setSets] = useState<string>('');
   const [reps, setReps] = useState<string>('');
   const [carga, setCarga] = useState<string>('');
+  const [hasAlteration, setHasAlteration] = useState<boolean>(false)
 
   const setsRef = useRef<TextInput>(null);
   const repsRef = useRef<TextInput>(null);
@@ -104,16 +105,27 @@ export default function NovoExercicio() {
     navigation.goBack()
   }
 
+  const handleEditaNome = (text:string) => { 
+    setNome(text)
+    setHasAlteration(true)
+  }
+
   const handleAumentarNumero = (state: string, setState: React.Dispatch<React.SetStateAction<string>>) => {
-    let stateParsed = parseInt(state)
-    stateParsed ++
-    setState(stateParsed.toString())
+    if(state === ''){
+      setState('1')
+    }else{
+      let stateParsed = parseInt(state)
+      stateParsed ++
+      setState(stateParsed.toString())
+    }
+    setHasAlteration(true)
   }
 
   const handleDiminuirNumero = (state: string, setState: React.Dispatch<React.SetStateAction<string>>) => {
     let stateParsed = parseInt(state)
     stateParsed --
     setState(stateParsed.toString())
+    setHasAlteration(true)
   }
 
   const handleCancelar = () => { 
@@ -161,11 +173,16 @@ export default function NovoExercicio() {
           placeholder='Nome'
           value={nome}
           multiline={true}
-          onChangeText={(text)=>{ setNome(text)} }
+          onChangeText={(text)=> handleEditaNome(text) }
         />
         <CampoMusculo  modalVisible={modalVisible} setModalVisible={setModalVisible} musculo={musculo} setMusculo={setMusculo}/>
         {modalVisible &&
-          <SelecionaMusculoModal modalVisible={modalVisible} setModalVisible={setModalVisible} musculo={musculo} setMusculo={setMusculo} />
+          <SelecionaMusculoModal 
+            modalVisible={modalVisible} 
+            setModalVisible={setModalVisible} 
+            setMusculo={setMusculo}
+            setHasAlteration={setHasAlteration}
+          />
         }
 
         <View style={styles.numeros_fields_container}>
@@ -230,7 +247,7 @@ export default function NovoExercicio() {
           </View>
         </View>
         <View style={styles.modal_buttons_container}>
-          {!nome || !musculo || !sets || !reps || !carga ?
+          {!nome || !musculo || !sets || !reps || !carga || !hasAlteration?
           <CustomButton style={styles.button_off} title='Salvar' />
             :
           <CustomButton style={styles.button_ok} title='Salvar' onPress={ exercicio? handleEditarExercicio : handleNovoExercicio}/>

@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
       borderRadius: 10,
       backgroundColor: CINZA_CLARO,
       alignSelf: 'center',
-      width: '70%'
+      width: '85%'
     },
     treino_row_text:{
       fontSize: 20,

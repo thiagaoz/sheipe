@@ -36,9 +36,9 @@ export default function Exercicios({exercicio}: Props) {
         onPress={() => handleCliqueExercicio()}  >
         <Text style={styles.nome}>{exercicio.nome}</Text>
         <View style={styles.descriçao}>
-          <Text style={styles.texto}>Sets: {exercicio.sets}</Text>  
-          <Text style={styles.texto}>Reps: {exercicio.reps}</Text>  
-          <Text style={styles.texto}>Carga: {exercicio.carga} kg</Text>  
+          <Text style={styles.texto}>{exercicio.musculo}</Text>  
+          <Text style={styles.texto}></Text>  
+          <Text style={styles.texto}>{exercicio.sets} x {exercicio.reps}   {exercicio.carga}kg</Text>  
         </View>
       </TouchableOpacity>
     </View>
@@ -63,14 +63,14 @@ const styles = StyleSheet.create({
     },
     descriçao:{
       flexDirection: 'row',
-      justifyContent: 'center'
+      justifyContent: 'space-around'
     },
     texto:{
       color: 'white',
-        //alignSelf: 'center',
-        fontSize: 18,
-        paddingLeft: 10,
-        marginRight:5
+      fontSize: 16,
+      paddingLeft: 10,
+      marginRight:5,
+      textTransform: 'capitalize'
     },
     status_touchable:{    
       borderWidth: 0.5,
