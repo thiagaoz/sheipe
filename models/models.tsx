@@ -12,13 +12,21 @@ export class Treino {
       this.key = uuid.v4().toString();
       this.exercicios = [];
     }
+
 }
 
-export const setIndexInTreinos = (treinos:Treino[]) => { 
-  for(let i = 0; i < treinos.length ; i++){
-    treinos[i].index = i;
+export const setIndexInTreinos = (arr: Treino[]) => { 
+  for(let i = 0; i < arr.length ; i++){
+    arr[i].index = i;
   }
-  return treinos
+  return arr 
+}
+
+export const setIndexInExercicios = (arr: Exercicio[]) => { 
+  for(let i = 0; i < arr.length ; i++){
+    arr[i].index = i;
+  }
+  return arr 
 }
 
 export class Exercicio {
@@ -29,6 +37,7 @@ export class Exercicio {
     carga: number;
     key: string;
     status: string;
+    index: number;
   
     constructor(nome:string, musculo:string, sets:string, reps:string, carga:string) {
       this.nome = nome
@@ -38,6 +47,7 @@ export class Exercicio {
       this.carga = parseInt(carga)
       this.status = STATUS[0];
       this.key = uuid.v4().toString();
+      this.index = -1
     }
   }
     

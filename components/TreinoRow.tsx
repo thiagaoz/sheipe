@@ -72,20 +72,7 @@ export default function TreinoRow({treino}:Props) {
         >
             <Text style={styles.nome}>{treino.nome}</Text>
         </TouchableOpacity>
-        
-        <View style={styles.emoji_container}>
-          <TouchableOpacity onPress={()=>handleEditTreino()}>
-            <Text style={styles.emoji}>✏️</Text>
-          </TouchableOpacity>
 
-          <TouchableOpacity onPress={()=>deleteTreinoAlert(treino.nome)}>
-            <Text style={styles.emoji}>❌</Text>
-          </TouchableOpacity>
-        </View>
-
-        {editTreinoModal &&
-          <NovoTreinoModal modalVisible={editTreinoModal} setModalVisible={setEditTreinoModal} modoEditar={true}/>
-        }
     </View>
   )
 }

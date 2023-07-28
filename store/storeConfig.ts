@@ -1,5 +1,5 @@
 import { createSlice, configureStore, PayloadAction } from '@reduxjs/toolkit'
-import { Exercicio, Treino } from '../models/models'
+import { Exercicio, Treino, setIndexInExercicios } from '../models/models'
 import * as db from '../database/database'
 
 export interface TreinosState {
@@ -21,25 +21,60 @@ const treinoSlice = createSlice({
             state.treinosArr.push(action.payload)
         },
         editarTreino: (state, action:PayloadAction<Treino>) => {
-          Object.assign(state.atual, action.payload)
-          Object.assign(state.treinosArr[action.payload.index], action.payload);
+          state.atual = {...action.payload}
+          state.treinosArr[action.payload.index] = {...action.payload}
         },
         adicionarExercicio: (state, action:PayloadAction<Exercicio>) => {
           state.atual.exercicios.push(action.payload)
-          Object.assign(state.treinosArr[state.atual.index], state.atual);
+          state.treinosArr[state.atual.index] = {...state.atual} ;
         },
         setTreinoAtual: (state, action:PayloadAction<Treino>) => {
-          Object.assign(state.atual, action.payload)
+          state.atual = {...action.payload}
         },
         carregaTreinos: (state, action:PayloadAction<Treino[]>) => {
           state.treinosArr = [...action.payload]
+        },
+        exercicioIndexMinus: (state, action:PayloadAction<number>) => {
+          let oldIndex = action.payload
+          const exerciciosArr = state.atual.exercicios
+          const exerciciosArrNew: Exercicio[] = []
+          for (let i=0; i<exerciciosArr.length; i++){
+            if (oldIndex-1 === i){
+              exerciciosArrNew.push(exerciciosArr[oldIndex])
+              exerciciosArrNew.push(exerciciosArr[i])
+              i++
+            }
+            else{
+              exerciciosArrNew.push(exerciciosArr[i])
+            }
+          }
+          state.atual.exercicios = setIndexInExercicios(exerciciosArrNew)
+          state.treinosArr[state.atual.index] = {...state.atual}
+        },
+        exercicioIndexPlus: (state, action:PayloadAction<number>) => {
+          let oldIndex = action.payload
+          const exerciciosArr = state.atual.exercicios
+          const exerciciosArrNew: Exercicio[] = []
+          for (let i=0; i<exerciciosArr.length; i++){
+            if (oldIndex === i){
+              exerciciosArrNew.push(exerciciosArr[i+1])
+              exerciciosArrNew.push(exerciciosArr[oldIndex])
+              i++
+            }
+            else{
+              exerciciosArrNew.push(exerciciosArr[i])
+            }
+          }
+          state.atual.exercicios = setIndexInExercicios(exerciciosArrNew)
+          state.treinosArr[state.atual.index] = {...state.atual}
         },
         resetTreino: () => initialTreinoState,
         
     }
 })
 
-export const {adicionarTreino, adicionarExercicio, resetTreino, setTreinoAtual, editarTreino, carregaTreinos} = treinoSlice.actions
+export const {adicionarTreino, adicionarExercicio, resetTreino, setTreinoAtual, editarTreino, 
+  carregaTreinos, exercicioIndexMinus, exercicioIndexPlus} = treinoSlice.actions
 
 export interface ExercicioState {
   atual: Exercicio | null

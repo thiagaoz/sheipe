@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View, Modal, Alert, Button, TextInput, TextInputFocusEventData, NativeSyntheticEvent } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Modal, Alert, Button, TextInput, TextInputFocusEventData, NativeSyntheticEvent, BackHandler } from 'react-native';
 import { useNavigation, NavigationProp, RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../App'; // Import the RootStackParamList type
 import React, { useEffect, useRef, useState } from 'react'
@@ -7,18 +7,20 @@ import AppHeader from '../components/AppHeader';
 import CustomButton from '../components/CustomButton';
 import CampoMusculo from '../components/CampoMusculo';
 import SelecionaMusculoModal from '../components/SelecionaMusculoModal';
-import { Exercicio, Treino } from '../models/models';
-import { adicionarExercicio, editarTreino, resetExercicio, resetTreino} from '../store/storeConfig';
+import { Exercicio, Treino, setIndexInExercicios } from '../models/models';
+import { adicionarExercicio, editarTreino, exercicioIndexMinus, exercicioIndexPlus, resetExercicio, resetTreino} from '../store/storeConfig';
 import { useDispatch } from 'react-redux'
 import * as db from '../database/database';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
-import { createAsyncThunk } from '@reduxjs/toolkit';
+import Icon from 'react-native-vector-icons/FontAwesome'
+import ClickableIcon from '../components/ClicklabIecon';
 
 
 
 export default function NovoExercicio() {
 
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const dispatch = useAppDispatch()
 
   const [modalVisible, setModalVisible] = useState<boolean>(false)
   const [musculo, setMusculo] = useState<string>('')
@@ -33,7 +35,6 @@ export default function NovoExercicio() {
 
   const treino = useAppSelector((state) => state.treino.atual)
   const exercicio = useAppSelector((state) => state.exercicio.atual)
-  const dispatch = useAppDispatch()
 
   useEffect(() => {
     
@@ -46,6 +47,14 @@ export default function NovoExercicio() {
     }
 
   }, [])
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener('hardwareBackPress', handleBackButton);
+
+    return () => {
+      backHandler.remove();
+    };
+  }, []);
   
   const handleEditarExercicio = async () => { 
     const exercicioAtualizado = {
@@ -55,7 +64,8 @@ export default function NovoExercicio() {
       reps: parseInt(reps),
       carga: parseInt(carga),
       key: exercicio!.key,
-      status: exercicio!.status
+      status: exercicio!.status,
+      index: exercicio!.index
     }
     const novoExerciciosArr: Exercicio[] = []
     treino.exercicios.forEach( exercicio => {
@@ -65,6 +75,7 @@ export default function NovoExercicio() {
         novoExerciciosArr.push(exercicio)
       }
     })
+
     const treinoAtualizado = {...treino, exercicios: novoExerciciosArr}
     await db.salvarTreino(treinoAtualizado)
     dispatch(editarTreino({...treinoAtualizado}))
@@ -83,6 +94,7 @@ export default function NovoExercicio() {
     */}
     
     let exercicio : Exercicio = new Exercicio(nome, musculo, sets, reps, carga)
+    exercicio.index = treino.exercicios.length
     const novoExerciciosArr: Exercicio[]  = [...treino.exercicios]
     novoExerciciosArr.push(exercicio)
     const treinoAtualizado = {...treino, exercicios: novoExerciciosArr}
@@ -90,6 +102,18 @@ export default function NovoExercicio() {
     dispatch(adicionarExercicio({...exercicio}))
 
     navigation.goBack()
+  }
+
+  const handleAumentarNumero = (state: string, setState: React.Dispatch<React.SetStateAction<string>>) => {
+    let stateParsed = parseInt(state)
+    stateParsed ++
+    setState(stateParsed.toString())
+  }
+
+  const handleDiminuirNumero = (state: string, setState: React.Dispatch<React.SetStateAction<string>>) => {
+    let stateParsed = parseInt(state)
+    stateParsed --
+    setState(stateParsed.toString())
   }
 
   const handleCancelar = () => { 
@@ -120,15 +144,23 @@ export default function NovoExercicio() {
     )
   }
 
+  const handleBackButton = () => { 
+    dispatch(resetExercicio())
+    navigation.goBack()
+    return true
+  }
+
   return(
     <View style={styles.container}>
       <AppHeader />
-      <Text style={styles.titulo}>Novo Exercício</Text>
+      <Text style={styles.titulo}>{exercicio? 'Editar Exercício' : 'Novo Exercício'}</Text>
       <View style={styles.form_container}>
+      
       <TextInput
           style={styles.nome_field} 
           placeholder='Nome'
           value={nome}
+          multiline={true}
           onChangeText={(text)=>{ setNome(text)} }
         />
         <CampoMusculo  modalVisible={modalVisible} setModalVisible={setModalVisible} musculo={musculo} setMusculo={setMusculo}/>
@@ -136,41 +168,65 @@ export default function NovoExercicio() {
           <SelecionaMusculoModal modalVisible={modalVisible} setModalVisible={setModalVisible} musculo={musculo} setMusculo={setMusculo} />
         }
 
-        <View style={styles.label_numero_container}>
+        <View style={styles.numeros_fields_container}>
           <View style={styles.sets_container}>
             <Text style={styles.texto}>SETS</Text>
-            <TextInput
-              style={styles.numero_field} 
-              keyboardType='numeric'
-              placeholder='3'
-              value={sets}
-              onChangeText={ text => {setSets(text)}}
-              onSubmitEditing={()=>setsRef.current?.focus()}
-            />
+            <View style={styles.inputs_container}>
+              <TouchableOpacity onPress={()=>handleDiminuirNumero(sets, setSets)}>
+                <Icon name='minus' size={30} color={VERDE_CLARO} />
+              </TouchableOpacity>
+              <TextInput
+                style={styles.numero_field} 
+                keyboardType='numeric'
+                placeholder='3'
+                value={sets}
+                onChangeText={ text => {setSets(text)}}
+                onSubmitEditing={()=>setsRef.current?.focus()}
+              />
+              <TouchableOpacity onPress={()=>handleAumentarNumero(sets, setSets)}>
+                <Icon name='plus' size={30} color={VERDE_CLARO} />
+              </TouchableOpacity>
+            </View>
           </View>
           <View style={styles.sets_container}>
             <Text style={styles.texto}>REPS</Text>
-            <TextInput
-              style={styles.numero_field} 
-              keyboardType='numeric'
-              placeholder='12'
-              ref={repsRef}
-              value={reps}
-              onChangeText={text => setReps(text)}
-              onSubmitEditing={()=>cargaRef.current?.focus()}
-              
-            />
+            <View style={styles.inputs_container}>
+              <TouchableOpacity onPress={()=>handleDiminuirNumero(reps, setReps)}>
+                <Icon name='minus' size={30} color={VERDE_CLARO} />
+              </TouchableOpacity>
+              <TextInput
+                style={styles.numero_field} 
+                keyboardType='numeric'
+                placeholder='12'
+                ref={repsRef}
+                value={reps}
+                onChangeText={text => setReps(text)}
+                onSubmitEditing={()=>cargaRef.current?.focus()}   
+              />
+              <TouchableOpacity onPress={()=>handleAumentarNumero(reps, setReps)}>
+                <Icon name='plus' size={30} color={VERDE_CLARO} />
+              </TouchableOpacity>
+            </View>
           </View>
+
           <View style={styles.sets_container}>
             <Text style={styles.texto}>CARGA</Text>
-            <TextInput
-              style={styles.numero_field} 
-              keyboardType='numeric'
-              placeholder='50'
-              ref={cargaRef}
-              value={carga}
-              onChangeText={ text => setCarga(text)}
-            />
+            <View style={styles.inputs_container}>
+              <TouchableOpacity onPress={()=>handleDiminuirNumero(carga, setCarga)}>
+                <Icon name='minus' size={30} color={VERDE_CLARO} />
+              </TouchableOpacity>
+              <TextInput
+                style={styles.numero_field} 
+                keyboardType='numeric'
+                placeholder='50'
+                ref={cargaRef}
+                value={carga}
+                onChangeText={ text => setCarga(text)}
+              />
+              <TouchableOpacity onPress={()=>handleAumentarNumero(carga, setCarga)}>
+                <Icon name='plus' size={30} color={VERDE_CLARO} />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
         <View style={styles.modal_buttons_container}>
@@ -198,8 +254,7 @@ const styles = StyleSheet.create({
   },
   form_container:{
     flex: 1,
-    
-    paddingTop: 20
+    paddingTop: 10
   },
   mais_treino:{
     backgroundColor: VERDE_CLARO,
@@ -223,25 +278,27 @@ const styles = StyleSheet.create({
     paddingLeft:30,
     paddingRight: 30,
     backgroundColor: '#d9d6d6',
-    fontSize: 20,
+    fontSize: 25,
     width: '80%',
-    alignSelf: 'center'
+    alignSelf: 'center',
+    textAlign: 'center'
   },
-  label_numero_container: {
+  numeros_fields_container: {
     flexDirection: 'column',
-    alignItems: 'flex-end',
-    justifyContent: 'center',
-  },
-  sets_container: {
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 140
+    marginTop:30
+  },
+  sets_container: {
+    //flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   numero_field:{
     margin: 5,
+    marginLeft: 10, 
+    marginRight: 10,
     backgroundColor: '#d9d6d6',
-    
     width: 70,
     height: 40,
     fontSize: 25,
@@ -255,7 +312,11 @@ const styles = StyleSheet.create({
   },
   texto:{
     color: 'white',
-    fontSize: 20
+    fontSize: 15
+  },
+  inputs_container:{
+    flexDirection: 'row',
+    alignItems: 'center'
   },
   button_off:{
     backgroundColor: CINZA_CLARO,

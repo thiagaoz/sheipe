@@ -1,11 +1,15 @@
-import { StyleSheet, TextInput, View, Modal, Alert, Keyboard, } from 'react-native';
+  import { StyleSheet, TextInput, View, Modal, Alert, Keyboard, Text} from 'react-native';
 import CustomButton from '../components/CustomButton';
 import {VERDE_CLARO, CINZA_ESCURO, CINZA_CLARO, CINZA_MODAL, VERMELHO_CANCEL, VERDE_OK} from '../styles/colors';
 import React, { useEffect, useRef, useState } from 'react'
 import * as db from '../database/database'
-import { Treino } from '../models/models';
+import { Exercicio, Treino, setIndexInTreinos } from '../models/models';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { adicionarTreino, editarTreino } from '../store/storeConfig';
+import { adicionarTreino, carregaTreinos, editarTreino } from '../store/storeConfig';
+import Exercicios from '../components/Exercicios';
+import ClickableIcon from '../components/ClicklabIecon';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
+import { RootStackParamList } from '../App'; // Import the RootStackParamList type
 
 
 interface Props{
@@ -22,6 +26,9 @@ export default function NovoTreino({modalVisible, setModalVisible, modoEditar}: 
   
   const treinos = useAppSelector((state)=> state.treino.treinosArr)
   const treino = useAppSelector((state) => state.treino.atual)
+  const exercicios = useAppSelector( (state) => state.treino.atual.exercicios)
+  
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const dispatch = useAppDispatch()
   
   const [inputText, setInputText] = useState<string>('')
@@ -59,6 +66,55 @@ export default function NovoTreino({modalVisible, setModalVisible, modoEditar}: 
     }, 5); // Delay the focus call by 200 milliseconds
   };
 
+  const exercicioUp = (index: number) => { 
+    const exerciciosNew = [...exercicios]
+    exerciciosNew[index -1] = exercicios[index]
+    exerciciosNew[index -1].index = index - 1
+    exerciciosNew[index] = exercicios[index - 1]
+    exerciciosNew[index].index = index
+    dispatch(editarTreino({...treino, exercicios: [...exerciciosNew]}))
+  }
+
+  const exercicioDown = (index: number) => { 
+    const exerciciosNew = [...exercicios]
+    exerciciosNew[index +1] = exercicios[index]
+    exerciciosNew[index +1].index = index + 1
+    exerciciosNew[index] = exercicios[index + 1]
+    exerciciosNew[index].index = index
+    dispatch(editarTreino({...treino, exercicios: [...exerciciosNew]}))
+  }
+
+  const handleDeleteTreino = async () => {
+    const treinosNew:Treino[] = []
+    for (let i =0 ; i<treinos.length; i++) {
+      if(treino.index !== i){
+        treinosNew.push(treinos[i])
+      }
+    }
+    const treinosIndexed :Treino[] = setIndexInTreinos(treinosNew)
+    await db.deleteTreinoDB(treino.key)
+    if(treinosIndexed.length > 0){
+      treinosIndexed.sort((a,b) => a.index - b.index)
+      await db.multiSalvaTreino(treinosIndexed)
+    }
+    dispatch(carregaTreinos([...treinosIndexed]))
+    navigation.goBack()
+  }
+
+  const deleteTreinoAlert = (txt:string) => { 
+    Alert.alert(
+      'Deletar Treino',
+      'Você quer deletar o treino "' + txt+ ' " ?',
+      [
+        {
+          text: 'SIM',
+          onPress: () => handleDeleteTreino()
+        },
+        {text: 'NÃO', style: 'cancel'}
+      ]
+    )
+  }
+
   return (
     <Modal
         animationType="slide"
@@ -79,6 +135,26 @@ export default function NovoTreino({modalVisible, setModalVisible, modoEditar}: 
             onChangeText={(text) => setInputText(text)}
             autoFocus={true}
           />
+
+        {treino.exercicios.length !== 0&& 
+          exercicios.map((exercicio) => {
+            return (<View style={styles.exercicios_row} key={exercicio.key}>
+              {exercicio.index!==0?
+                <ClickableIcon name='arrow-up' size={25} color={VERDE_CLARO} style={styles.arrows} onPress={()=>exercicioUp(exercicio.index)}/>
+              :
+                <ClickableIcon name='arrow-up' size={25} color={CINZA_ESCURO} style={styles.arrows} />
+              
+              }
+              <Text style={styles.exercicio_nome}>{exercicio.nome}</Text>
+              {exercicio.index!==exercicios.length-1?
+                <ClickableIcon name='arrow-down' size={25} color={VERDE_CLARO}  style={styles.arrows} onPress={()=>exercicioDown(exercicio.index)}/>
+                :
+                <ClickableIcon name='arrow-down' size={25} color={CINZA_ESCURO}  style={styles.arrows}/>  
+              }
+              
+            </View>)
+          })
+        }
           <View style={styles.modal_buttons_container}>
             {
             !inputText?
@@ -88,6 +164,7 @@ export default function NovoTreino({modalVisible, setModalVisible, modoEditar}: 
             }
             <CustomButton style={styles.button_cancel} title='Cancelar' onPress={() => {setModalVisible(!modalVisible)}} />
           </View>
+          <ClickableIcon name='trash' color={VERMELHO_CANCEL} size={40} style={styles.trash_icon} onPress={()=>deleteTreinoAlert(treino.nome)}/>
         </View>
       </Modal>
   )
@@ -102,8 +179,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 100,
-    height: 300,
-    width: 300,
+    minHeight: 300,
+    width: 370,
     borderColor: 'white',
     borderWidth: 1,
     borderRadius: 20
@@ -115,11 +192,13 @@ const styles = StyleSheet.create({
     marginTop: 50
   },
   input_field:{
+    fontSize: 20,
     margin: 5,
     paddingLeft:30,
     paddingRight: 30,
     backgroundColor: '#d9d6d6',
-    width: 200
+    minWidth: 200,
+    textAlign: 'center'
   },
   button_off:{
     backgroundColor: CINZA_ESCURO,
@@ -133,4 +212,30 @@ const styles = StyleSheet.create({
     backgroundColor: VERMELHO_CANCEL,
     width: 100
   },
+  exercicios_row:{
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 10,
+  },
+  exercicio_nome: {
+    color: CINZA_ESCURO,
+    backgroundColor: VERDE_CLARO,
+    alignSelf: 'center',
+    fontSize: 18,
+    marginLeft:15,
+    marginRight: 15, 
+    borderRadius: 5,
+    textAlign: 'center',
+    minHeight: 30,
+    width: 250
+  },
+  arrows:{
+    justifyContent: 'center'
+  },
+  trash_icon:{
+
+    marginTop: 20,
+    marginBottom: 10
+  }
 });

@@ -6,19 +6,26 @@ import {VERDE_CLARO, CINZA_ESCURO} from '../styles/colors';
 import { Exercicio, Treino } from '../models/models';
 import Exercicios from '../components/Exercicios';
 import * as db from '../database/database';
-import { TreinosState, store } from '../store/storeConfig';
-import { useAppSelector } from '../store/hooks';
+import { TreinosState, resetExercicio, store } from '../store/storeConfig';
+import { useAppDispatch, useAppSelector } from '../store/hooks';
 import NovoTreinoModal from './NovoTreinoModal';
 import AppHeader from '../components/AppHeader';
+import ClickableIcon from '../components/ClicklabIecon';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function TreinoScreen() {
 
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const dispatch = useAppDispatch()
+
   const treino = useAppSelector( (state) => state.treino.atual);
   const exercicios = useAppSelector( (state) => state.treino.atual.exercicios)
 
   const [modalVisible, setModalVisible] = useState<boolean>(false)
 
+  useEffect(() => {
+    dispatch(resetExercicio())
+  }, [])
 
   const renderExercicios = () => {
     return (
@@ -52,6 +59,8 @@ export default function TreinoScreen() {
 
         <View style={styles.treino_container}>
           <Text style={styles.titulo}>{treino.nome}</Text>
+          <ClickableIcon name='edit' color={VERDE_CLARO} size={35} onPress={ ()=>setModalVisible(!modalVisible) }/>
+  
           {/* 
           <TouchableOpacity onPress={ ()=>setModalVisible(!modalVisible) } >
             <Text style={styles.emoji_editar}>✏️</Text>
@@ -68,7 +77,7 @@ export default function TreinoScreen() {
           renderExercicios()
         }
         <TouchableOpacity style={styles.mais_exercicio} onPress={() => { navigation.navigate('NovoExercicio') }}>
-          <Text >+ Exercício</Text>
+          <Text style={styles.mais_exercicio_text}>+ Exercício</Text>
         </TouchableOpacity>
 
         {/* --- BOTÕES DE TESTES
@@ -103,13 +112,14 @@ const styles = StyleSheet.create({
       marginLeft: 10
     },
     treino_container:{
-      justifyContent: 'space-around',
-      flexDirection: 'row'
+      justifyContent: 'space-between',
+      flexDirection: 'row',
+      marginRight: 10
     },
     titulo:{
       color: 'white',
       fontSize: 25,
-      margin: 10
+      margin: 10,
     },
     emoji_estatisticas:{
       fontSize: 30,
@@ -133,10 +143,10 @@ const styles = StyleSheet.create({
       padding: 5,
       paddingLeft: 10,
       paddingRight: 10,
-      fontSize: 20,
       borderRadius: 5,
-      borderColor: 'white',
-      borderWidth: 1
+    },
+    mais_exercicio_text:{
+      fontSize: 15
     },
     teste:{
       borderColor: 'white',

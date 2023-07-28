@@ -28,8 +28,7 @@ const styles = StyleSheet.create({
         backgroundColor: CINZA_ESCURO,
         width: '80%',
         alignSelf: 'center',
-        marginBottom: 5,
-        marginTop: 5
+        marginTop: 15
     },
     button:{
         backgroundColor: '#474B48',
@@ -42,7 +41,7 @@ const styles = StyleSheet.create({
     texto:{
         alignSelf: 'center',
         color: 'white',
-        fontSize: 25,
+        fontSize: 20,
         fontWeight: 'bold'
     }
 })

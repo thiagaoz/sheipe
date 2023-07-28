@@ -100,10 +100,8 @@ const styles = StyleSheet.create({
       padding: 5,
       paddingLeft: 10,
       paddingRight: 10,
-      fontSize: 20,
+      fontSize: 15,
       borderRadius: 5,
-      borderColor: 'white',
-      borderWidth: 1
     },
     button_teste:{
       marginTop: 10
