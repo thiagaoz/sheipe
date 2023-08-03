@@ -41,7 +41,8 @@ const styles = StyleSheet.create({
     header_title: {
         color: VERDE_CLARO,
         fontSize: 25,
-        marginLeft: 10
+        marginLeft: 10,
+        fontWeight: 'bold'
     },
     info_icon: {
       alignSelf: 'center',

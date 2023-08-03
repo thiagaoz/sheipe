@@ -7,13 +7,15 @@ import {VERDE_CLARO, CINZA_ESCURO, CINZA_CLARO, CINZA_MODAL, VERMELHO_CANCEL, VE
 import CustomButton from '../components/CustomButton';
 import NovoTreinoModal from './NovoTreinoModal';
 import AppHeader from '../components/AppHeader';
-import { Treino } from '../models/models';
-import { store, resetTreino, resetExercicio, adicionarTreino, carregaTreinos } from '../store/storeConfig';
+import { push, pull ,legs, setIndexInTreinos } from '../models/models';
+import { store, resetTreino, resetExercicio, adicionarTreino, carregaTreinos, resetStore } from '../store/storeConfig';
 import * as db from '../database/database'
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 
 
 export default function Home() {
+
+  let debugMode = true
 
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const dispatch = useAppDispatch()
@@ -52,19 +54,30 @@ export default function Home() {
       console.log('Nome: ' +treino.nome+' / Excs: ' +treino.exercicios.length)
     })
   }
+  */}
+  const addTreinos = async () => {
+    push.index = treinos.length
+    pull.index = treinos.length+1
+    legs.index = treinos.length+2
+    await db.multiSalvaTreino([push,pull,legs])
+    const data = await db.getAllTreinos()
+    const indexedData = setIndexInTreinos(data)
+    dispatch(carregaTreinos(indexedData))
+    console.log('Treinos adicionados: ' +data.length)
+  }
 
   const clearData = async () => {
     try {
       db.clearAll();
-      dispatch(resetTreino())        
       dispatch(resetExercicio())
+      dispatch(resetStore())       
       console.log('=============== CLEARED =======================')
 
     } catch (e) {
       console.log('Failed to clear data:', e);
     }
   };
-  */}
+
   
 
   return (
@@ -78,8 +91,14 @@ export default function Home() {
         {/*------ APENAS PARA TESTES
         <CustomButton style={styles.button_teste} title='REDUX STORE' onPress={()=>currentStore()}/>
         <CustomButton style={styles.button_teste} title='DATABASE' onPress={()=>currentDatabase()}/>
-        <CustomButton style={styles.button_teste} title='CLEAR DB' onPress={()=>clearData()}/>
         */}
+        {debugMode&&
+          <View>
+            <CustomButton style={styles.button_teste} title='ADD TREINOS' onPress={()=>addTreinos()}/>
+            <CustomButton style={styles.button_teste} title='CLEAR ALL' onPress={()=>clearData()}/>
+          </View>
+        }
+        
         {modalVisible &&
           <NovoTreinoModal modalVisible={modalVisible} setModalVisible={setModalVisible} />
         }
@@ -104,7 +123,9 @@ const styles = StyleSheet.create({
       borderRadius: 5,
     },
     button_teste:{
-      marginTop: 10
+      marginTop: 20,
+      color: 'white',
+      fontWeight: 'bold',
     }
 
   });

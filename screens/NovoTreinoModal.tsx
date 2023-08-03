@@ -146,7 +146,6 @@ export default function NovoTreino({modalVisible, setModalVisible, modoEditar}: 
         visible={modalVisible}
         onShow={handleOnShow}
         onRequestClose={() => {
-          Alert.alert('Modal has been closed.');
           setModalVisible(!modalVisible);
         }}>
         <View style={styles.modal_container}>

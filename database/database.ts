@@ -71,9 +71,7 @@ export const deleteTreinoDB = async (key:string) => {
     } catch(e) {
       console.log('Erro ao remover treino')
     }
-  
-    console.log('Done.')
-  }
+}
 
 export const clearAll = async () => {
     try {

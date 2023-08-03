@@ -14,6 +14,7 @@ import * as db from '../database/database';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import Icon from 'react-native-vector-icons/FontAwesome'
 import ClickableIcon from '../components/ClicklabIecon';
+import SelecionaEquipModal from '../components/SelecionaEquipModal';
 
 
 
@@ -23,11 +24,13 @@ export default function NovoExercicio() {
   const dispatch = useAppDispatch()
 
   const [modalVisible, setModalVisible] = useState<boolean>(false)
+  const [equipModalVisible, setEquipModalVisible] = useState<boolean>(false)
   const [musculo, setMusculo] = useState<string>('')
   const [nome, setNome] = useState<string>('')
   const [sets, setSets] = useState<string>('');
   const [reps, setReps] = useState<string>('');
   const [carga, setCarga] = useState<string>('');
+  const [equip, setEquip] = useState<string>('')
   const [hasAlteration, setHasAlteration] = useState<boolean>(false)
 
   const setsRef = useRef<TextInput>(null);
@@ -45,6 +48,7 @@ export default function NovoExercicio() {
       setSets(exercicio.sets.toString())
       setReps(exercicio.reps.toString())
       setCarga(exercicio.carga.toString())
+      setEquip(exercicio.equip)
     }
 
   }, [])
@@ -64,6 +68,7 @@ export default function NovoExercicio() {
       sets: parseInt(sets),
       reps: parseInt(reps),
       carga: parseInt(carga),
+      equip: equip,
       key: exercicio!.key,
       status: exercicio!.status,
       index: exercicio!.index
@@ -94,7 +99,7 @@ export default function NovoExercicio() {
     }
     */}
     
-    let exercicio : Exercicio = new Exercicio(nome, musculo, sets, reps, carga)
+    let exercicio : Exercicio = new Exercicio(nome, musculo, sets, reps, carga, equip)
     exercicio.index = treino.exercicios.length
     const novoExerciciosArr: Exercicio[]  = [...treino.exercicios]
     novoExerciciosArr.push(exercicio)
@@ -122,9 +127,16 @@ export default function NovoExercicio() {
   }
 
   const handleDiminuirNumero = (state: string, setState: React.Dispatch<React.SetStateAction<string>>) => {
-    let stateParsed = parseInt(state)
-    stateParsed --
-    setState(stateParsed.toString())
+    if(state === ''){
+      setState('0')
+    }
+    else if(state !=='0'){
+      let stateParsed = parseInt(state)
+      stateParsed --
+      setState(stateParsed.toString())
+    }
+
+    
     setHasAlteration(true)
   }
 
@@ -245,6 +257,19 @@ export default function NovoExercicio() {
               </TouchableOpacity>
             </View>
           </View>
+          <TouchableOpacity style={styles.equip_field} onPress={()=> {setEquipModalVisible(!equipModalVisible)}}> 
+            <Text style={styles.texto}>
+                {equip==='' ? 'Selecionar equipamento' : equip}
+            </Text>
+          </TouchableOpacity>
+          {equipModalVisible &&
+          <SelecionaEquipModal 
+            equipModalVisible={equipModalVisible} 
+            setEquipModalVisible={setEquipModalVisible} 
+            setEquip={setEquip}
+            setHasAlteration={setHasAlteration}
+          />
+        }
         </View>
         <View style={styles.modal_buttons_container}>
           {!nome || !musculo || !sets || !reps || !carga || !hasAlteration?
@@ -335,6 +360,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center'
   },
+  equip_field:{
+    marginTop: 20,
+    backgroundColor: '#474B48',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+},
   button_off:{
     backgroundColor: CINZA_CLARO,
     width: 100,

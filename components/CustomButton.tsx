@@ -9,8 +9,8 @@ interface CustomButtonProps {
 
 const CustomButton = ({ onPress, title, style }: CustomButtonProps) => {
   return (
-    <TouchableOpacity style={[styles.button, style]} onPress={onPress}>
-      <Text style={styles.buttonText}>{title}</Text>
+    <TouchableOpacity  onPress={onPress}>
+      <Text style={[styles.button, style]}>{title}</Text>
     </TouchableOpacity>
   );
 };
@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'blue',
     padding: 10,
     borderRadius: 5,
-    alignItems: 'center',
+    textAlign: 'center',
     color: 'white',
     fontSize: 16,
   },

@@ -1,6 +1,7 @@
 import { createSlice, configureStore, PayloadAction } from '@reduxjs/toolkit'
-import { Exercicio, Treino, setIndexInExercicios } from '../models/models'
-import * as db from '../database/database'
+import { Exercicio, Treino, setIndexInExercicios, setIndexInTreinos } from '../models/models'
+
+
 
 export interface TreinosState {
   treinosArr: Treino[];
@@ -71,12 +72,13 @@ const treinoSlice = createSlice({
         resetTreino: (state) => {
           state.atual = {...treinoInicial}
         },
+        resetStore: () => initialTreinoState
         
     }
 })
 
 export const {adicionarTreino, adicionarExercicio, resetTreino, setTreinoAtual, editarTreino, 
-  carregaTreinos, exercicioIndexMinus, exercicioIndexPlus} = treinoSlice.actions
+  carregaTreinos, exercicioIndexMinus, exercicioIndexPlus, resetStore} = treinoSlice.actions
 
 export interface ExercicioState {
   atual: Exercicio | null

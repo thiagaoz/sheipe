@@ -17,27 +17,20 @@ export default function Treinos() {
   const treinos:Treino[] = useAppSelector( (state) => state.treino.treinosArr);
 
   const treinoUp = (treino:Treino) => {
-    console.log('UP')
     const treinosNew = [...treinos]
     treinosNew[treino.index - 1] = treinos[treino.index]
     treinosNew[treino.index] = treinos[treino.index - 1]
     const treinosIndexed = setIndexInTreinos(treinosNew)
     dispatch(carregaTreinos([...treinosIndexed]))
-    treinosIndexed.forEach( treino => {
-      console.log(treino.nome +'['+ treino.index +']')
-    })
+
   }
 
   const treinoDown = (treino:Treino) => {
-    console.log('DOWN')
     const treinosNew = [...treinos]
     treinosNew[treino.index + 1] = treinos[treino.index]
     treinosNew[treino.index] = treinos[treino.index + 1]
     const treinosIndexed = setIndexInTreinos(treinosNew)
     dispatch(carregaTreinos([...treinosIndexed]))
-    treinosIndexed.forEach( treino => {
-      console.log(treino.nome +'['+ treino.index +']')
-    })
   }
 
   const handleCliqueTreino = (treino:Treino) => { 
@@ -110,7 +103,7 @@ const styles = StyleSheet.create({
       borderRadius: 10,
       backgroundColor: CINZA_CLARO,
       alignSelf: 'center',
-      width: '85%'
+      width: '75%'
     },
     treino_row_text:{
       fontSize: 20,
