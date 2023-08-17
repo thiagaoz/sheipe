@@ -7,10 +7,11 @@ import {VERDE_CLARO, CINZA_ESCURO, CINZA_CLARO, CINZA_MODAL, VERMELHO_CANCEL, VE
 import CustomButton from '../components/CustomButton';
 import NovoTreinoModal from './NovoTreinoModal';
 import AppHeader from '../components/AppHeader';
-import { push, pull ,legs, setIndexInTreinos } from '../models/models';
-import { store, resetTreino, resetExercicio, adicionarTreino, carregaTreinos, resetStore } from '../store/storeConfig';
+import { push, pull ,legs, setIndexInTreinos, Treino } from '../models/models';
+import { store, resetTreino, resetExercicio, adicionarTreino, carregaTreinos, resetStore, setTreinoAtual } from '../store/storeConfig';
 import * as db from '../database/database'
 import { useAppSelector, useAppDispatch } from '../store/hooks';
+import ClickableIcon from '../components/ClicklabIecon';
 
 
 export default function Home() {
@@ -22,8 +23,7 @@ export default function Home() {
 
 
   const [modalVisible, setModalVisible] = useState<boolean>(false)
-  const treinos = useAppSelector((state) => state.treino.treinosArr)
-  const exercicio = useAppSelector((state)=> state.exercicio.atual)
+  const treinos:Treino[] = useAppSelector( (state) => state.treino.treinosArr);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,6 +35,12 @@ export default function Home() {
     }
     fetchData()
   }, []);
+
+  const handleCliqueTreino = (treino:Treino) => { 
+    dispatch(setTreinoAtual(treino))
+    navigation.navigate('TreinoDisplayScreen')
+  }
+
 
   {/*------ APENAS PARA TESTES
   const currentStore = () => { 
@@ -83,7 +89,30 @@ export default function Home() {
   return (
     <View style={styles.container}>
         <AppHeader />
-        <TreinosTable />
+
+        <View >
+        
+          <Text style={styles.titulo}>Treinos</Text>
+          <View style={styles.edit_icon_container} >
+            <ClickableIcon name='edit' color={VERDE_CLARO} size={40} onPress={()=>navigation.navigate('ReordernarTreinos',{treinos})}/>
+        
+        </View>
+
+      {treinos.length!==0&&
+        treinos.map( treino => (
+          <View style={styles.treino_row_container} key={treino.key}>
+
+            <TouchableOpacity style={styles.treinos_row} onPress={()=> handleCliqueTreino(treino)}>
+              <Text style={ treino.nome.length < 16 ? styles.treino_row_text : [styles.treino_row_text, styles.lowerCase]}>
+                {treino.nome}</Text>
+            </TouchableOpacity>
+
+          </View>
+        ))
+      }
+  
+
+    </View>
         <TouchableOpacity onPress={()=> {setModalVisible(!modalVisible)}}>
           <Text style={styles.mais_treino}>+ Treino</Text>
         </TouchableOpacity>
@@ -126,6 +155,56 @@ const styles = StyleSheet.create({
       marginTop: 20,
       color: 'white',
       fontWeight: 'bold',
+    },
+    titulo_container:{
+      flexDirection: 'row',
+      justifyContent: 'center'
+    },
+    titulo:{
+        color: 'white',
+        alignSelf: 'center',
+        textAlign: 'center',
+        fontSize: 28,
+        fontWeight: 'bold',
+        marginBottom: 15,
+    },
+    edit_icon_container:{
+      marginTop: 3,
+      right: 20,
+      borderColor:'red',
+      borderRadius: 5,
+      position: 'absolute'
+    },
+    treinos_row:{
+      marginBottom: 5,
+      paddingBottom: 4,
+      paddingTop: 4,
+      marginLeft: 10,
+      marginRight: 10,
+      borderRadius: 10,
+      backgroundColor: CINZA_CLARO,
+      alignSelf: 'center',
+      justifyContent: 'center',
+      width: '85%',
+      //height: 50
+    },
+    treino_row_text:{
+      fontSize: 25,
+      color: 'white',
+      textAlign: 'center',
+      fontWeight: 'bold',
+      marginLeft: 3
+    },
+    editar_button:{
+      backgroundColor: VERDE_CLARO,
+      color: CINZA_ESCURO
+    },
+    treino_row_container:{
+      flexDirection: 'row',
+      justifyContent: 'center'
+    },
+    lowerCase:{
+      fontSize: 20
     }
 
   });

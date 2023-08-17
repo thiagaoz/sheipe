@@ -16,7 +16,7 @@ const InfoScreen = () => {
         <Text style={styles.text}>por Thiago Vaz</Text>
         <Text style={styles.text}>github: @thiagaoz</Text>
         <Text style={styles.text}>contato: thiagaoz@proton.me</Text>
-        <Text style={styles.text_projeto}>Repositório do projeto:</Text>
+        <Text style={styles.text_projeto}>Repositório:</Text>
         <TouchableOpacity onPress={handleLinkPress}>
           <Text style={styles.text}> 🔗 github.com/thiagaoz/sheipe 🔗</Text>
         </TouchableOpacity>

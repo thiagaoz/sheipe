@@ -1,4 +1,4 @@
-import { StyleSheet, TextInput, View, Modal, Alert,  FlatList, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, TextInput, View, Modal, Alert,  FlatList, Text, TouchableOpacity, TouchableWithoutFeedback } from 'react-native';
 import CustomButton from './CustomButton';
 import {VERDE_CLARO, CINZA_ESCURO, CINZA_CLARO, CINZA_MODAL, VERMELHO_CANCEL, VERDE_OK} from '../styles/colors';
 import React, { useEffect, useRef, useState } from 'react'
@@ -37,21 +37,32 @@ export default function SelecionaEquip({equipModalVisible, setEquipModalVisible,
         onRequestClose={() => {
           setEquipModalVisible(!equipModalVisible);
         }}>
-        <FlatList
-            data={EQUIPAMENTO}
-            numColumns={2}
-            renderItem={renderMusculos}
-            keyExtractor={(item, index) => index.toString()}
-            contentContainerStyle={styles.content}
-        />
+        <TouchableWithoutFeedback onPress={() => setEquipModalVisible(false)}>
+          <View style={styles.modalContent}>
+            <FlatList
+                data={EQUIPAMENTO}
+                numColumns={2}
+                renderItem={renderMusculos}
+                keyExtractor={(item, index) => index.toString()}
+                contentContainerStyle={styles.content}
+            />
+          </View>
+        </TouchableWithoutFeedback>
       </Modal>
   )
 }
 
 const styles = StyleSheet.create({
-    container: {
-
-    },
+  container: {
+    backgroundColor: 'transparent', // Set background color to transparent
+    flex: 1,
+  },
+  modalContent: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
     content: {
       marginTop: 180,
       paddingTop: 20,

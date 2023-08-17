@@ -1,4 +1,4 @@
-  import { StyleSheet, TextInput, View, Modal, Alert, Keyboard, Text} from 'react-native';
+  import { StyleSheet, TextInput, View, Modal, Alert, Keyboard, Text, TouchableWithoutFeedback} from 'react-native';
 import CustomButton from '../components/CustomButton';
 import {VERDE_CLARO, CINZA_ESCURO, CINZA_CLARO, CINZA_MODAL, VERMELHO_CANCEL, VERDE_OK} from '../styles/colors';
 import React, { useEffect, useRef, useState } from 'react'
@@ -33,6 +33,7 @@ export default function NovoTreino({modalVisible, setModalVisible, modoEditar}: 
   
   const [inputText, setInputText] = useState<string>('')
   const [treinoAltered, setTreinoAltered] = useState<boolean>(false)
+  const [isInputOnFocus, setIsInputOnFocus] = useState<boolean>(false)
   const [treinoOld, setTreinoOld] = useState<Treino>()
   const inputRef = useRef<TextInput | null>(null);
 
@@ -77,6 +78,12 @@ export default function NovoTreino({modalVisible, setModalVisible, modoEditar}: 
       inputRef.current?.focus();
     }, 5); // Delay the focus call by 200 milliseconds
   };
+
+  const dynamicModalPosition = {
+    marginTop: 40
+  }
+
+
 
   const exercicioUp = (index: number) => { 
     const exerciciosNew = [...exercicios]
@@ -144,58 +151,61 @@ export default function NovoTreino({modalVisible, setModalVisible, modoEditar}: 
         animationType="slide"
         transparent={true}
         visible={modalVisible}
-        onShow={handleOnShow}
+        //onShow={handleOnShow}
         onRequestClose={() => {
           setModalVisible(!modalVisible);
         }}>
-        <View style={styles.modal_container}>
-          <TextInput
-            ref={inputRef}
+          <TouchableWithoutFeedback onPress={()=> Keyboard.dismiss()}>
+            <View style={styles.modal_container}>
+              <TouchableWithoutFeedback onPress={()=> {} }>
+                <TextInput
+                  ref={inputRef}
 
-            style={styles.input_field} 
-            placeholder='Nome do treino'
-            value={inputText}
-            onChangeText={(text) => handleNomeChange(text)}
-            autoFocus={true}
-          />
-
-        {treino.exercicios.length !== 0&& 
-          exercicios.map((exercicio) => {
-            return (<View style={styles.exercicios_row} key={exercicio.key}>
-              {exercicio.index!==0?
-                <ClickableIcon name='arrow-up' size={30} color={VERDE_CLARO} style={styles.arrows} onPress={()=>exercicioUp(exercicio.index)}/>
-              :
-                <ClickableIcon name='arrow-up' size={30} color={CINZA_ESCURO} style={styles.arrows} />
-              
-              }
-              <Text style={styles.exercicio_nome}>{exercicio.nome}</Text>
-              {exercicio.index!==exercicios.length-1?
-                <ClickableIcon name='arrow-down' size={30} color={VERDE_CLARO}  style={styles.arrows} onPress={()=>exercicioDown(exercicio.index)}/>
-                :
-                <ClickableIcon name='arrow-down' size={30} color={CINZA_ESCURO}  style={styles.arrows}/>  
-              }
-              
-            </View>)
-          })
-        }
-          <View style={styles.modal_buttons_container}>
-            {
-            !inputText||!treinoAltered?
-              <CustomButton style={styles.button_off} title='Salvar' />
-              :
-              <CustomButton style={styles.button_ok} title='Salvar' onPress={ modoEditar? handleEditarTreino : handleNovoTreino}/>
+                  style={styles.input_field} 
+                  placeholder='Nome do treino'
+                  value={inputText}
+                  onChangeText={(text) => handleNomeChange(text)}
+                  autoFocus={false}
+                  onFocus={()=> setIsInputOnFocus(true)}
+                />
+              </TouchableWithoutFeedback>
+            {treino.exercicios.length !== 0&& 
+              exercicios.map((exercicio) => {
+                return (
+                  <View style={styles.exercicios_row} key={exercicio.key}>
+                    {exercicio.index!==0?
+                      <ClickableIcon name='arrow-up' size={30} color={VERDE_CLARO} style={styles.arrows} onPress={()=>exercicioUp(exercicio.index)}/>
+                    :
+                      <ClickableIcon name='arrow-up' size={30} color={CINZA_ESCURO} style={styles.arrows} />
+                    
+                    }
+                    <Text style={styles.exercicio_nome}>{exercicio.nome}</Text>
+                    {exercicio.index!==exercicios.length-1?
+                      <ClickableIcon name='arrow-down' size={30} color={VERDE_CLARO}  style={styles.arrows} onPress={()=>exercicioDown(exercicio.index)}/>
+                      :
+                      <ClickableIcon name='arrow-down' size={30} color={CINZA_ESCURO}  style={styles.arrows}/>  
+                    }
+                    
+                  </View>)
+              })
             }
-            <CustomButton style={styles.button_cancel} title='Cancelar' onPress={() => handleCancelar()} />
+              <View style={styles.modal_buttons_container}>
+                {
+                !inputText||!treinoAltered?
+                  <CustomButton style={styles.button_off} title='Salvar' />
+                  :
+                  <CustomButton style={styles.button_ok} title='Salvar' onPress={ modoEditar? handleEditarTreino : handleNovoTreino}/>
+                }
+                <CustomButton style={styles.button_cancel} title='Cancelar' onPress={() => handleCancelar()} />
+              </View>
+              {modoEditar&&
+                <ClickableIcon name='trash' color={VERMELHO_CANCEL} size={40} style={styles.trash_icon} onPress={()=>deleteTreinoAlert(treino.nome)}/>
+              }
           </View>
-          {modoEditar&&
-            <ClickableIcon name='trash' color={VERMELHO_CANCEL} size={40} style={styles.trash_icon} onPress={()=>deleteTreinoAlert(treino.nome)}/>
-          }
-        </View>
+        </TouchableWithoutFeedback>
       </Modal>
   )
 }
-
-
 
 const styles = StyleSheet.create({
   modal_container: {
@@ -209,7 +219,9 @@ const styles = StyleSheet.create({
     width: 370,
     borderColor: 'white',
     borderWidth: 1,
-    borderRadius: 20
+    borderRadius: 20,
+    zIndex: 0,
+    position: 'absolute'
   },
   modal_buttons_container:{
     flexDirection: 'row',
@@ -260,6 +272,11 @@ const styles = StyleSheet.create({
   },
   trash_icon:{
     marginTop: 20,
-    marginBottom: 10
+    marginBottom: 10,
+    padding: 10,
+    paddingLeft: 15,
+    paddingRight: 15,
+    borderRadius: 100,
+    backgroundColor: CINZA_ESCURO
   }
 });

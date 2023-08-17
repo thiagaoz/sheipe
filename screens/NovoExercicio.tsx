@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View, Modal, Alert, Button, TextInput, TextInputFocusEventData, NativeSyntheticEvent, BackHandler } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View, Modal, Alert, Button, TextInput, TextInputFocusEventData, NativeSyntheticEvent, BackHandler, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { useNavigation, NavigationProp, RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../App'; // Import the RootStackParamList type
 import React, { useEffect, useRef, useState } from 'react'
@@ -175,117 +175,121 @@ export default function NovoExercicio() {
   }
 
   return(
-    <View style={styles.container}>
-      <AppHeader />
-      <Text style={styles.titulo}>{exercicio? 'Editar Exercício' : 'Novo Exercício'}</Text>
-      <View style={styles.form_container}>
-      
-      <TextInput
-          style={styles.nome_field} 
-          placeholder='Nome'
-          value={nome}
-          multiline={true}
-          onChangeText={(text)=> handleEditaNome(text) }
-        />
-        <CampoMusculo  modalVisible={modalVisible} setModalVisible={setModalVisible} musculo={musculo} setMusculo={setMusculo}/>
-        {modalVisible &&
-          <SelecionaMusculoModal 
-            modalVisible={modalVisible} 
-            setModalVisible={setModalVisible} 
-            setMusculo={setMusculo}
-            setHasAlteration={setHasAlteration}
+    <TouchableWithoutFeedback onPress={()=> Keyboard.dismiss()}>
+      <View style={styles.container}>
+        <AppHeader />
+        <Text style={styles.titulo}>{exercicio? 'Editar Exercício' : 'Novo Exercício'}</Text>
+        <View style={styles.form_container}>
+        
+        <TouchableWithoutFeedback onPress={()=>{}}>
+          <TextInput
+            style={styles.nome_field} 
+            placeholder='Nome'
+            value={nome}
+            multiline={true}
+            onChangeText={(text)=> handleEditaNome(text) }
           />
-        }
-
-        <View style={styles.numeros_fields_container}>
-          <View style={styles.sets_container}>
-            <Text style={styles.texto}>SETS</Text>
-            <View style={styles.inputs_container}>
-              <TouchableOpacity onPress={()=>handleDiminuirNumero(sets, setSets)}>
-                <Icon name='minus' size={30} color={VERDE_CLARO} />
-              </TouchableOpacity>
-              <TextInput
-                style={styles.numero_field} 
-                keyboardType='numeric'
-                placeholder='3'
-                value={sets}
-                onChangeText={ text => {setSets(text)}}
-                onSubmitEditing={()=>setsRef.current?.focus()}
-              />
-              <TouchableOpacity onPress={()=>handleAumentarNumero(sets, setSets)}>
-                <Icon name='plus' size={30} color={VERDE_CLARO} />
-              </TouchableOpacity>
-            </View>
-          </View>
-          <View style={styles.sets_container}>
-            <Text style={styles.texto}>REPS</Text>
-            <View style={styles.inputs_container}>
-              <TouchableOpacity onPress={()=>handleDiminuirNumero(reps, setReps)}>
-                <Icon name='minus' size={30} color={VERDE_CLARO} />
-              </TouchableOpacity>
-              <TextInput
-                style={styles.numero_field} 
-                keyboardType='numeric'
-                placeholder='12'
-                ref={repsRef}
-                value={reps}
-                onChangeText={text => setReps(text)}
-                onSubmitEditing={()=>cargaRef.current?.focus()}   
-              />
-              <TouchableOpacity onPress={()=>handleAumentarNumero(reps, setReps)}>
-                <Icon name='plus' size={30} color={VERDE_CLARO} />
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          <View style={styles.sets_container}>
-            <Text style={styles.texto}>CARGA</Text>
-            <View style={styles.inputs_container}>
-              <TouchableOpacity onPress={()=>handleDiminuirNumero(carga, setCarga)}>
-                <Icon name='minus' size={30} color={VERDE_CLARO} />
-              </TouchableOpacity>
-              <TextInput
-                style={styles.numero_field} 
-                keyboardType='numeric'
-                placeholder='50'
-                ref={cargaRef}
-                value={carga}
-                onChangeText={ text => setCarga(text)}
-              />
-              <TouchableOpacity onPress={()=>handleAumentarNumero(carga, setCarga)}>
-                <Icon name='plus' size={30} color={VERDE_CLARO} />
-              </TouchableOpacity>
-            </View>
-          </View>
-          <TouchableOpacity style={styles.equip_field} onPress={()=> {setEquipModalVisible(!equipModalVisible)}}> 
-            <Text style={styles.texto}>
-                {equip==='' ? 'Selecionar equipamento' : equip}
-            </Text>
-          </TouchableOpacity>
-          {equipModalVisible &&
-          <SelecionaEquipModal 
-            equipModalVisible={equipModalVisible} 
-            setEquipModalVisible={setEquipModalVisible} 
-            setEquip={setEquip}
-            setHasAlteration={setHasAlteration}
-          />
-        }
-        </View>
-        <View style={styles.modal_buttons_container}>
-          {!nome || !musculo || !sets || !reps || !carga || !hasAlteration?
-          <CustomButton style={styles.button_off} title='Salvar' />
-            :
-          <CustomButton style={styles.button_ok} title='Salvar' onPress={ exercicio? handleEditarExercicio : handleNovoExercicio}/>
+        </TouchableWithoutFeedback>
+          <CampoMusculo  modalVisible={modalVisible} setModalVisible={setModalVisible} musculo={musculo} setMusculo={setMusculo}/>
+          {modalVisible &&
+            <SelecionaMusculoModal 
+              modalVisible={modalVisible} 
+              setModalVisible={setModalVisible} 
+              setMusculo={setMusculo}
+              setHasAlteration={setHasAlteration}
+            />
           }
-          
-          <CustomButton style={styles.button_cancel} title='Cancelar' onPress={handleCancelar}/>
-        </View>
-        {exercicio&&
-          <CustomButton style={styles.button_delete} title='DELETAR' onPress={deleteExercicioAlert}/>
+
+          <View style={styles.numeros_fields_container}>
+            <View style={styles.sets_container}>
+              <Text style={styles.texto}>SETS</Text>
+              <View style={styles.inputs_container}>
+                <TouchableOpacity onPress={()=>handleDiminuirNumero(sets, setSets)}>
+                  <Icon name='minus' size={30} color={VERDE_CLARO} />
+                </TouchableOpacity>
+                <TextInput
+                  style={styles.numero_field} 
+                  keyboardType='numeric'
+                  placeholder='3'
+                  value={sets}
+                  onChangeText={ text => {setSets(text)}}
+                  onSubmitEditing={()=>setsRef.current?.focus()}
+                />
+                <TouchableOpacity onPress={()=>handleAumentarNumero(sets, setSets)}>
+                  <Icon name='plus' size={30} color={VERDE_CLARO} />
+                </TouchableOpacity>
+              </View>
+            </View>
+            <View style={styles.sets_container}>
+              <Text style={styles.texto}>REPS</Text>
+              <View style={styles.inputs_container}>
+                <TouchableOpacity onPress={()=>handleDiminuirNumero(reps, setReps)}>
+                  <Icon name='minus' size={30} color={VERDE_CLARO} />
+                </TouchableOpacity>
+                <TextInput
+                  style={styles.numero_field} 
+                  keyboardType='numeric'
+                  placeholder='12'
+                  ref={repsRef}
+                  value={reps}
+                  onChangeText={text => setReps(text)}
+                  onSubmitEditing={()=>cargaRef.current?.focus()}   
+                />
+                <TouchableOpacity onPress={()=>handleAumentarNumero(reps, setReps)}>
+                  <Icon name='plus' size={30} color={VERDE_CLARO} />
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View style={styles.sets_container}>
+              <Text style={styles.texto}>CARGA</Text>
+              <View style={styles.inputs_container}>
+                <TouchableOpacity onPress={()=>handleDiminuirNumero(carga, setCarga)}>
+                  <Icon name='minus' size={30} color={VERDE_CLARO} />
+                </TouchableOpacity>
+                <TextInput
+                  style={styles.numero_field} 
+                  keyboardType='numeric'
+                  placeholder='50'
+                  ref={cargaRef}
+                  value={carga}
+                  onChangeText={ text => setCarga(text)}
+                />
+                <TouchableOpacity onPress={()=>handleAumentarNumero(carga, setCarga)}>
+                  <Icon name='plus' size={30} color={VERDE_CLARO} />
+                </TouchableOpacity>
+              </View>
+            </View>
+            <TouchableOpacity style={styles.equip_field} onPress={()=> {setEquipModalVisible(!equipModalVisible)}}> 
+              <Text style={styles.texto}>
+                  {equip==='' ? 'Selecionar equipamento' : equip}
+              </Text>
+            </TouchableOpacity>
+            {equipModalVisible &&
+            <SelecionaEquipModal 
+              equipModalVisible={equipModalVisible} 
+              setEquipModalVisible={setEquipModalVisible} 
+              setEquip={setEquip}
+              setHasAlteration={setHasAlteration}
+            />
           }
+          </View>
+          <View style={styles.modal_buttons_container}>
+            {!nome || !musculo || !sets || !reps || !carga || !hasAlteration?
+            <CustomButton style={styles.button_off} title='Salvar' />
+              :
+            <CustomButton style={styles.button_ok} title='Salvar' onPress={ exercicio? handleEditarExercicio : handleNovoExercicio}/>
+            }
+            
+            <CustomButton style={styles.button_cancel} title='Cancelar' onPress={handleCancelar}/>
+          </View>
+          {exercicio&&
+            <CustomButton style={styles.button_delete} title='DELETAR' onPress={deleteExercicioAlert}/>
+            }
+        </View>
+
       </View>
-
-    </View>
+    </TouchableWithoutFeedback>
   )
 }
 

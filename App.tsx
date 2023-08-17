@@ -8,6 +8,8 @@ import InfoScreen from './screens/InfoScreen';
 import NovoExercicio from './screens/NovoExercicio';
 import { store } from './store/storeConfig';
 import { Provider } from 'react-redux'
+import ReordernarTreinos from './screens/ReordernarTreinos';
+import { Treino } from './models/models';
 
 
 export type RootStackParamList = {
@@ -15,6 +17,7 @@ export type RootStackParamList = {
   TreinoDisplayScreen: undefined;
   NovoExercicio: undefined;
   InfoScreen: undefined;
+  ReordernarTreinos: {treinos: Treino[]};
   // Add other screen names and their corresponding params if needed
 };
 
@@ -33,6 +36,9 @@ export default function App() {
           <Stack.Screen name="TreinoDisplayScreen" component={TreinoDisplayScreen} />
           <Stack.Screen name="NovoExercicio" component={NovoExercicio}/>
           <Stack.Screen name="InfoScreen" component={InfoScreen} />
+          <Stack.Screen name="ReordernarTreinos">
+            {props => <ReordernarTreinos {...props} treinos={props.route.params.treinos}/>}
+          </Stack.Screen>
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

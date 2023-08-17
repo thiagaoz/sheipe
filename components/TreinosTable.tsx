@@ -9,6 +9,7 @@ import { CINZA_CLARO, CINZA_ESCURO, VERDE_CLARO, VERDE_OK } from '../styles/colo
 import Icon from 'react-native-vector-icons/FontAwesome'
 import { useNavigation, NavigationProp } from '@react-navigation/native'
 import { RootStackParamList } from '../App'
+import ClickableIcon from './ClicklabIecon';
 
 export default function Treinos() {
 
@@ -42,7 +43,9 @@ export default function Treinos() {
     <View style={styles.container}>
       <View style={styles.titulo_container}>
         <Text style={styles.titulo}>Treinos</Text>
-        
+        <View style={styles.edit_icon_container} >
+          <ClickableIcon name='edit' color={VERDE_CLARO} size={40} />
+        </View>
       </View>
 
       {treinos.length!==0&&
@@ -91,8 +94,17 @@ const styles = StyleSheet.create({
     titulo:{
         color: 'white',
         alignSelf: 'center',
+        textAlign: 'center',
         fontSize: 28,
+        fontWeight: 'bold',
         marginBottom: 15,
+    },
+    edit_icon_container:{
+      marginTop: 3,
+      right: 20,
+      borderColor:'red',
+      borderRadius: 5,
+      position: 'absolute'
     },
     treinos_row:{
       marginBottom: 5,
