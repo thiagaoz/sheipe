@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React from 'react';
+import React, { useState, useEffect } from 'react'; 
 import Home from './screens/Home';
 import TreinoDisplayScreen from './screens/TreinoDisplayScreen';
 import InfoScreen from './screens/InfoScreen';
@@ -24,6 +24,21 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
+
+  {/*
+  const [isSplashScreenDone, setIsSplashScreenDone] = useState(false);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsSplashScreenDone(true);
+    }, 5); // 2000 milliseconds = 2 seconds
+  }, []);
+
+  if (!isSplashScreenDone) {
+    // Display the splash screen while the delay is ongoing
+    return null;
+  }
+  */}
 
   return (
     <Provider store={store}>
