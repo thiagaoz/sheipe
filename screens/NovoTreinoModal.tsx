@@ -72,19 +72,6 @@ export default function NovoTreino({modalVisible, setModalVisible, modoEditar}: 
     Keyboard.dismiss(); 
   }
 
-  const handleOnShow = () => {
-    inputRef.current?.blur();
-    setTimeout(() => {
-      inputRef.current?.focus();
-    }, 5); // Delay the focus call by 200 milliseconds
-  };
-
-  const dynamicModalPosition = {
-    marginTop: 40
-  }
-
-
-
   const exercicioUp = (index: number) => { 
     const exerciciosNew = [...exercicios]
     exerciciosNew[index -1] = exercicios[index]

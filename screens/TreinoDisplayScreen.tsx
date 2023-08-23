@@ -36,22 +36,6 @@ export default function TreinoScreen() {
     );
   };
 
-{/*
-  const consoleLogTreino = async() => {
-    console.log('------ EXERCICIOS - STORE ------------')
-    exercicios.forEach( exercicio => {
-      console.log(`${exercicio.nome}: ${exercicio.sets} x ${exercicio.reps} / ${exercicio.carga}`)
-0    })
-    console.log('------ EXERCICIOS - DATABASE ------------')
-    const treinoDB = await db.getTreino(treino.key)
-    if(treinoDB){
-      treinoDB.exercicios.forEach( exercicio => {
-        console.log(`${exercicio.nome}: ${exercicio.sets} x ${exercicio.reps} / ${exercicio.carga}`)
-      })
-    }
-  }
-*/}
-
   return (
     <View style={styles.container}>
         <AppHeader />
@@ -60,14 +44,6 @@ export default function TreinoScreen() {
           <Text style={styles.titulo}>{treino.nome}</Text>
           <ClickableIcon name='edit' color={VERDE_CLARO} size={35} onPress={ ()=>setModalVisible(!modalVisible) }/>
   
-          {/* 
-          <TouchableOpacity onPress={ ()=>setModalVisible(!modalVisible) } >
-            <Text style={styles.emoji_editar}>✏️</Text>
-          </TouchableOpacity>
-          <TouchableOpacity>
-            <Text style={styles.emoji_estatisticas}>📊</Text>
-          </TouchableOpacity>
-        */}
         </View>
 
         {treino.exercicios.length === 0? 
@@ -78,12 +54,6 @@ export default function TreinoScreen() {
         <TouchableOpacity style={styles.mais_exercicio} onPress={() => { navigation.navigate('NovoExercicio') }}>
           <Text style={styles.mais_exercicio_text}>+ Exercício</Text>
         </TouchableOpacity>
-
-        {/* --- BOTÕES DE TESTES
-        <TouchableOpacity style={styles.mais_exercicio} onPress={() => consoleLogTreino()}>
-          <Text >CONSOLE LOG</Text>
-        </TouchableOpacity>
-        */}
 
         {modalVisible &&
           <NovoTreinoModal modalVisible={modalVisible} setModalVisible={setModalVisible} modoEditar={true}/>

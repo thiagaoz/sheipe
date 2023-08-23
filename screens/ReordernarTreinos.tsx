@@ -64,8 +64,8 @@ export default function ReordernarTreinos({treinos}:Props) {
     setTreinosWasEdited(true)
   }
 
-  // Salva na database
-  const handleSalvar = () => { 
+  const handleSalvar = async () => { 
+    await db.multiSalvaTreino([...treinosNew])
     dispatch(carregaTreinos([...treinosNew]))
     navigation.goBack()
   }

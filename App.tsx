@@ -25,21 +25,6 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
 
-  {/*
-  const [isSplashScreenDone, setIsSplashScreenDone] = useState(false);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setIsSplashScreenDone(true);
-    }, 5); // 2000 milliseconds = 2 seconds
-  }, []);
-
-  if (!isSplashScreenDone) {
-    // Display the splash screen while the delay is ongoing
-    return null;
-  }
-  */}
-
   return (
     <Provider store={store}>
       <NavigationContainer>

@@ -16,7 +16,7 @@ import ClickableIcon from '../components/ClicklabIecon';
 
 export default function Home() {
 
-  let debugMode = true
+  let debugMode = false
 
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const dispatch = useAppDispatch()
@@ -61,6 +61,7 @@ export default function Home() {
     })
   }
   */}
+  
   const addTreinos = async () => {
     push.index = treinos.length
     pull.index = treinos.length+1
